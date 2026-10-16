@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Droplet, Lock, Mail, AlertCircle, Sparkles } from 'lucide-react';
-import apiClient from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+  const { toast } = useToast();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,26 +17,39 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!email.trim() || !password) {
+      setError('Please provide both email and password.');
+      toast.warning('Please enter your email and password.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const res = await apiClient.post('/api/auth/login', { email, password });
-      const data = res.data?.data;
-      if (data?.token) {
-        login(data.token, data.user);
-        navigate('/');
+      const data = await login({ email: email.trim(), password });
+      toast.success(`Welcome back, ${data?.user?.name || 'User'}!`);
+      
+      const destination = location.state?.from?.pathname;
+      if (destination) {
+        navigate(destination);
+      } else if (data?.user?.role === 'DONOR') {
+        navigate('/donor/dashboard');
+      } else if (data?.user?.role === 'RECIPIENT') {
+        navigate('/recipient/dashboard');
       } else {
-        setError('Login failed: Invalid server response.');
+        navigate('/');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password.');
+      const msg = err.response?.data?.message || 'Invalid email or password.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
 
-  const setDemoAccount = (demoEmail, demoRole) => {
+  const setDemoAccount = (demoEmail) => {
     setEmail(demoEmail);
     setPassword('Password@123');
   };
@@ -64,30 +79,46 @@ export default function Login() {
           <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
             <button
               type="button"
-              onClick={() => setDemoAccount('donor1@lifedrop.test', 'DONOR')}
-              className="py-1.5 px-2 bg-white rounded-lg border border-red-200 text-red-700 hover:bg-red-50 text-left"
+              id="demo-donor-btn"
+              onClick={() => setDemoAccount('donor1@lifedrop.test')}
+              className="py-1.5 px-2 bg-white rounded-lg border border-red-200 text-red-700 hover:bg-red-50 text-left transition-colors"
             >
-              🧑 Donor 1 (A+)
+              🧑 Donor 1 (A+, Indore)
             </button>
             <button
               type="button"
-              onClick={() => setDemoAccount('recipient1@lifedrop.test', 'RECIPIENT')}
-              className="py-1.5 px-2 bg-white rounded-lg border border-red-200 text-red-700 hover:bg-red-50 text-left"
+              id="demo-recipient-btn"
+              onClick={() => setDemoAccount('recipient1@lifedrop.test')}
+              className="py-1.5 px-2 bg-white rounded-lg border border-red-200 text-red-700 hover:bg-red-50 text-left transition-colors"
             >
-              🏥 Recipient 1
+              🏥 Recipient 1 (Indore)
+            </button>
+            <button
+              type="button"
+              onClick={() => setDemoAccount('donor2@lifedrop.test')}
+              className="py-1.5 px-2 bg-white rounded-lg border border-red-200 text-slate-700 hover:bg-red-50 text-left transition-colors"
+            >
+              🧑 Donor 2 (A+)
+            </button>
+            <button
+              type="button"
+              onClick={() => setDemoAccount('recipient2@lifedrop.test')}
+              className="py-1.5 px-2 bg-white rounded-lg border border-red-200 text-slate-700 hover:bg-red-50 text-left transition-colors"
+            >
+              🏥 Recipient 2 (O+)
             </button>
           </div>
         </div>
 
         {error && (
-          <div className="p-4 mb-6 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 shrink-0" />
+          <div className="p-4 mb-6 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-sm flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                 Email Address
@@ -95,6 +126,7 @@ export default function Login() {
               <div className="relative">
                 <input
                   type="email"
+                  id="login-email-input"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -112,6 +144,7 @@ export default function Login() {
               <div className="relative">
                 <input
                   type="password"
+                  id="login-password-input"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -124,8 +157,9 @@ export default function Login() {
 
             <button
               type="submit"
+              id="login-submit-btn"
               disabled={loading}
-              className="w-full bg-[#991B1B] hover:bg-[#7F1D1D] text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full bg-[#991B1B] hover:bg-[#7F1D1D] text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
             </button>

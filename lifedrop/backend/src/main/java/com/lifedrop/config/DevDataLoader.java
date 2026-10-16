@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * Dev-profile data seeder.
- * Seeds 12 donors across Bhopal (within 15 km of center 23.2599, 77.4126) and 2 recipients.
+ * Seeds 12 donors across Indore (within 15 km of center 22.7196, 75.8577) and 2 recipients.
  * Password for all accounts: Password@123
  * Only executes when the users table is completely empty.
  */
@@ -39,10 +39,10 @@ public class DevDataLoader implements CommandLineRunner {
             return;
         }
 
-        log.info("🌱 Seeding demo donors and recipients for 'dev' profile in Bhopal, MP...");
+        log.info("🌱 Seeding demo donors and recipients for 'dev' profile in Indore, MP...");
         String encodedPassword = passwordEncoder.encode("Password@123");
 
-        // 12 Donors around Bhopal (Center: 23.2599, 77.4126 - spread within 15 km)
+        // 12 Donors around Indore (Center: 22.7196, 75.8577 - spread within 15 km)
         List<User> donors = List.of(
                 User.builder()
                         .name("Aarav Sharma")
@@ -53,9 +53,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.A_POSITIVE)
                         .age(26)
                         .gender("MALE")
-                        .city("Bhopal")
-                        .latitude(23.2332)
-                        .longitude(77.4334)
+                        .city("Indore")
+                        .latitude(22.7244)
+                        .longitude(75.8839)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(LocalDate.now().minusDays(120))
@@ -69,9 +69,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.A_POSITIVE)
                         .age(24)
                         .gender("FEMALE")
-                        .city("Bhopal")
-                        .latitude(23.2156)
-                        .longitude(77.4312)
+                        .city("Indore")
+                        .latitude(22.7533)
+                        .longitude(75.8937)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(null)
@@ -85,9 +85,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.O_POSITIVE)
                         .age(29)
                         .gender("MALE")
-                        .city("Bhopal")
-                        .latitude(23.2412)
-                        .longitude(77.4012)
+                        .city("Indore")
+                        .latitude(22.6868)
+                        .longitude(75.8648)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(LocalDate.now().minusDays(95))
@@ -101,9 +101,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.O_NEGATIVE)
                         .age(27)
                         .gender("FEMALE")
-                        .city("Bhopal")
-                        .latitude(23.2380)
-                        .longitude(77.3990)
+                        .city("Indore")
+                        .latitude(22.7012)
+                        .longitude(75.8345)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(null)
@@ -117,9 +117,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.B_POSITIVE)
                         .age(31)
                         .gender("MALE")
-                        .city("Bhopal")
-                        .latitude(23.1820)
-                        .longitude(77.4180)
+                        .city("Indore")
+                        .latitude(22.6685)
+                        .longitude(75.8290)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(null)
@@ -133,9 +133,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.B_NEGATIVE)
                         .age(25)
                         .gender("FEMALE")
-                        .city("Bhopal")
-                        .latitude(23.1950)
-                        .longitude(77.4360)
+                        .city("Indore")
+                        .latitude(22.7165)
+                        .longitude(75.9082)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(null)
@@ -149,9 +149,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.AB_POSITIVE)
                         .age(34)
                         .gender("MALE")
-                        .city("Bhopal")
-                        .latitude(23.1750)
-                        .longitude(77.4520)
+                        .city("Indore")
+                        .latitude(22.7380)
+                        .longitude(75.9120)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(LocalDate.now().minusDays(105))
@@ -165,9 +165,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.AB_NEGATIVE)
                         .age(28)
                         .gender("FEMALE")
-                        .city("Bhopal")
-                        .latitude(23.2620)
-                        .longitude(77.4610)
+                        .city("Indore")
+                        .latitude(22.6950)
+                        .longitude(75.8250)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(null)
@@ -181,9 +181,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.A_NEGATIVE)
                         .age(30)
                         .gender("MALE")
-                        .city("Bhopal")
-                        .latitude(23.2450)
-                        .longitude(77.4820)
+                        .city("Indore")
+                        .latitude(22.7650)
+                        .longitude(75.8750)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(null)
@@ -197,9 +197,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.O_POSITIVE)
                         .age(23)
                         .gender("FEMALE")
-                        .city("Bhopal")
-                        .latitude(23.3050)
-                        .longitude(77.3990)
+                        .city("Indore")
+                        .latitude(22.7180)
+                        .longitude(75.8820)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(LocalDate.now().minusDays(150))
@@ -213,9 +213,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.A_POSITIVE)
                         .age(32)
                         .gender("MALE")
-                        .city("Bhopal")
-                        .latitude(23.2680)
-                        .longitude(77.3450)
+                        .city("Indore")
+                        .latitude(22.6288)
+                        .longitude(75.8052)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(null)
@@ -229,16 +229,16 @@ public class DevDataLoader implements CommandLineRunner {
                         .bloodGroup(BloodGroup.B_POSITIVE)
                         .age(26)
                         .gender("FEMALE")
-                        .city("Bhopal")
-                        .latitude(23.2820)
-                        .longitude(77.4550)
+                        .city("Indore")
+                        .latitude(22.7750)
+                        .longitude(75.8450)
                         .available(true)
                         .active(true)
                         .lastDonatedDate(null)
                         .build()
         );
 
-        // 2 Recipients in Bhopal
+        // 2 Recipients in Indore
         List<User> recipients = List.of(
                 User.builder()
                         .name("Rajesh Recipient")
@@ -247,9 +247,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .phone("9811111111")
                         .role(Role.RECIPIENT)
                         .bloodGroup(BloodGroup.A_POSITIVE)
-                        .city("Bhopal")
-                        .latitude(23.2599)
-                        .longitude(77.4126)
+                        .city("Indore")
+                        .latitude(22.7196)
+                        .longitude(75.8577)
                         .available(false)
                         .active(true)
                         .build(),
@@ -260,9 +260,9 @@ public class DevDataLoader implements CommandLineRunner {
                         .phone("9822222222")
                         .role(Role.RECIPIENT)
                         .bloodGroup(BloodGroup.O_POSITIVE)
-                        .city("Bhopal")
-                        .latitude(23.2210)
-                        .longitude(77.4380)
+                        .city("Indore")
+                        .latitude(22.7480)
+                        .longitude(75.8900)
                         .available(false)
                         .active(true)
                         .build()
@@ -271,7 +271,6 @@ public class DevDataLoader implements CommandLineRunner {
         userRepository.saveAll(donors);
         userRepository.saveAll(recipients);
 
-        log.info("✅ Successfully seeded {} donors and {} recipients in Bhopal for profile 'dev'.",
-                donors.size(), recipients.size());
+        log.info("Seed data inserted: {} users", donors.size() + recipients.size());
     }
 }

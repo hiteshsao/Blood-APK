@@ -1,0 +1,20 @@
+# Build & Dependency outputs
+target/
+node_modules/
+dist/
+
+# Environment & Secrets
+.env
+*.env
+application-local.properties
+application-local.yml
+
+# IDE & Editor files
+.vscode/
+.vscode/settings.json
+.idea/
+*.iml
+
+# Logs
+*.log
+logs/

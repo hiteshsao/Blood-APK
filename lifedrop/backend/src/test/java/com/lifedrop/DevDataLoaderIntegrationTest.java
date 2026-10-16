@@ -61,12 +61,12 @@ class DevDataLoaderIntegrationTest {
     @Autowired
     private ReportRepository reportRepository;
 
-    // Bhopal Center: 23.2599 N, 77.4126 E
-    private final double bhopalLat = 23.2599;
-    private final double bhopalLng = 77.4126;
+    // Indore Center: 22.7196 N, 75.8577 E
+    private final double indoreLat = 22.7196;
+    private final double indoreLng = 75.8577;
 
     @Test
-    @DisplayName("Verify DevDataLoader seeds 12 Bhopal donors + 2 recipients, and an A+ request matches seeded donors")
+    @DisplayName("Verify DevDataLoader seeds 12 Indore donors + 2 recipients, and an A+ request matches seeded donors")
     void testDevProfileSeedAndAplusMatching() throws Exception {
         // 1. Verify seeded users in database
         List<User> donors = userRepository.findByRole(Role.DONOR);
@@ -75,9 +75,9 @@ class DevDataLoaderIntegrationTest {
         assertEquals(12, donors.size(), "Should have exactly 12 seeded donors");
         assertEquals(2, recipients.size(), "Should have exactly 2 seeded recipients");
 
-        // Verify all donors are in Bhopal
+        // Verify all donors are in Indore
         for (User donor : donors) {
-            assertEquals("Bhopal", donor.getCity());
+            assertEquals("Indore", donor.getCity());
             assertNotNull(donor.getLatitude());
             assertNotNull(donor.getLongitude());
             assertTrue(donor.getAvailable());
@@ -100,28 +100,28 @@ class DevDataLoaderIntegrationTest {
         String token = objectMapper.readTree(loginResult.getResponse().getContentAsString())
                 .get("data").get("token").asText();
 
-        // 3. Search nearby compatible donors for A+ within 10 km around Bhopal
+        // 3. Search nearby compatible donors for A+ within 10 km around Indore
         mockMvc.perform(get("/api/recipient/donors/nearby")
                         .header("Authorization", "Bearer " + token)
                         .param("bloodGroup", "A+")
-                        .param("lat", String.valueOf(bhopalLat))
-                        .param("lng", String.valueOf(bhopalLng))
+                        .param("lat", String.valueOf(indoreLat))
+                        .param("lng", String.valueOf(indoreLng))
                         .param("radiusKm", "10.0"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data", hasSize(greaterThanOrEqualTo(4)))); // A+, A-, O+, O- in Bhopal
+                .andExpect(jsonPath("$.data", hasSize(greaterThanOrEqualTo(4)))); // Compatible in Indore
 
-        // 4. Create blood request for A+ in Bhopal -> automatically matches seeded donors!
+        // 4. Create blood request for A+ in Indore -> automatically matches seeded donors!
         CreateBloodRequestDto requestDto = CreateBloodRequestDto.builder()
-                .patientName("Bhopal Patient")
+                .patientName("Indore Patient")
                 .bloodGroup(BloodGroup.A_POSITIVE)
                 .unitsNeeded(2)
                 .urgency(Urgency.NORMAL)
-                .city("Bhopal")
-                .latitude(bhopalLat)
-                .longitude(bhopalLng)
+                .city("Indore")
+                .latitude(indoreLat)
+                .longitude(indoreLng)
                 .radiusKm(10.0)
-                .message("Urgent need in Bhopal city")
+                .message("Urgent need in Indore city")
                 .build();
 
         MvcResult createResult = mockMvc.perform(post("/api/recipient/requests")
