@@ -64,7 +64,7 @@ public class User {
     private Role role;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "blood_group", nullable = false)
+    @Column(name = "blood_group")
     private BloodGroup bloodGroup;
 
     private Integer age;
