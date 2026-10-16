@@ -1,0 +1,40 @@
+# === Build output ===
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# === IDE ===
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+bin/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Environment & Secrets ===
+.env
+*.env
+application-local.properties
+application-local.yml
+
+# === Firebase ===
+*-firebase-adminsdk-*.json
+firebase-service-account.json
+
+# === Logs ===
+logs/
+*.log
+
+# === Maven wrapper (if not committed) ===
+.mvn/wrapper/maven-wrapper.jar
