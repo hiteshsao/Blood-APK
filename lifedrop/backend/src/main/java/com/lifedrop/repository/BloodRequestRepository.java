@@ -35,6 +35,8 @@ public interface BloodRequestRepository extends JpaRepository<BloodRequest, Long
 
     List<BloodRequest> findByAcceptedDonorIdOrderByCreatedAtDesc(Long donorId);
 
+    List<BloodRequest> findByStatusAndCreatedAtBefore(RequestStatus status, java.time.LocalDateTime before);
+
     /**
      * Finds active PENDING requests within each request's radiusKm of a donor's location,
      * where the request blood group is in the donor's compatible recipient groups.

@@ -1,0 +1,606 @@
+{
+  "info": {
+    "_postman_id": "e81d7f42-4981-4ba2-b532-a5d6141a0e88",
+    "name": "LifeDrop Blood Donation Network API",
+    "description": "Complete Postman collection for LifeDrop peer-to-peer blood donation network.\nStrictly connects DONORS and RECIPIENTS without hospitals, blood banks, or inventory.\nIncludes Authentication, Profile, Donor operations, and Recipient blood request workflows.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "recipientToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "donorToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "requestId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Health Check",
+      "item": [
+        {
+          "name": "Health Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Public health check endpoint returning UP status."
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Authentication",
+      "item": [
+        {
+          "name": "Register Donor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('donorToken', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Amit Sharma\",\n  \"email\": \"amit.donor@example.com\",\n  \"password\": \"DonorPass123!\",\n  \"phone\": \"9876543210\",\n  \"role\": \"DONOR\",\n  \"bloodGroup\": \"A+\",\n  \"age\": 28,\n  \"gender\": \"MALE\",\n  \"city\": \"Delhi\",\n  \"latitude\": 28.6400,\n  \"longitude\": 77.2200\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new DONOR user. Blood group and age (18-65) are mandatory for donors."
+          }
+        },
+        {
+          "name": "Register Recipient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('recipientToken', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Verma\",\n  \"email\": \"rahul.recipient@example.com\",\n  \"password\": \"RecipientPass123!\",\n  \"phone\": \"9811122233\",\n  \"role\": \"RECIPIENT\",\n  \"city\": \"Delhi\",\n  \"latitude\": 28.6315,\n  \"longitude\": 77.2167\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new RECIPIENT user."
+          }
+        },
+        {
+          "name": "Login Donor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('donorToken', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"amit.donor@example.com\",\n  \"password\": \"DonorPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Authenticates a donor and returns JWT token."
+          }
+        },
+        {
+          "name": "Login Recipient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('recipientToken', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rahul.recipient@example.com\",\n  \"password\": \"RecipientPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Authenticates a recipient and returns JWT token."
+          }
+        },
+        {
+          "name": "Get Authenticated User (Me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recipientToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Returns current logged in user summary."
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 User Profile & Location",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recipientToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recipientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Verma\",\n  \"phone\": \"9811122233\",\n  \"city\": \"New Delhi\",\n  \"age\": 32,\n  \"gender\": \"MALE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update Location",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 28.6400,\n  \"longitude\": 77.2200\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/location",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "location"]
+            }
+          }
+        },
+        {
+          "name": "Update Push Token",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pushToken\": \"fcm_sample_token_xyz_12345\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/push-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "push-token"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Recipient Operations",
+      "item": [
+        {
+          "name": "Create Blood Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('requestId', jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recipientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientName\": \"Aarav Verma\",\n  \"bloodGroup\": \"A+\",\n  \"unitsNeeded\": 2,\n  \"urgency\": \"NORMAL\",\n  \"city\": \"Delhi\",\n  \"latitude\": 28.6315,\n  \"longitude\": 77.2167,\n  \"radiusKm\": 10.0,\n  \"message\": \"Urgent surgery scheduled at Delhi Hospital\",\n  \"requiredBy\": \"2026-10-18T18:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recipient/requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipient", "requests"]
+            },
+            "description": "Creates blood request with PENDING status, discovers compatible nearby donors, creates PENDING RequestResponse records, dispatches notification, and returns request with matchedDonorCount. Donor contact is strictly omitted."
+          }
+        },
+        {
+          "name": "Get My Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recipientToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recipient/requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipient", "requests"]
+            },
+            "description": "Returns all blood requests created by logged-in recipient, ordered newest first."
+          }
+        },
+        {
+          "name": "Get Request Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recipientToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recipient/requests/{{requestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipient", "requests", "{{requestId}}"]
+            },
+            "description": "Details of the blood request. Includes accepted donor's name and phone ONLY if status is ACCEPTED or COMPLETED."
+          }
+        },
+        {
+          "name": "Cancel Request",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recipientToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recipient/requests/{{requestId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipient", "requests", "{{requestId}}", "cancel"]
+            },
+            "description": "Cancels an active request. Remaining pending responses transition to EXPIRED."
+          }
+        },
+        {
+          "name": "Complete Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recipientToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recipient/requests/{{requestId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipient", "requests", "{{requestId}}", "complete"]
+            },
+            "description": "Marks an ACCEPTED blood request as COMPLETED and sets accepted donor's lastDonatedDate to today."
+          }
+        },
+        {
+          "name": "Search Nearby Compatible Donors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recipientToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recipient/donors/nearby?bloodGroup=A+&lat=28.6315&lng=77.2167&radiusKm=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipient", "donors", "nearby"],
+              "query": [
+                {
+                  "key": "bloodGroup",
+                  "value": "A+"
+                },
+                {
+                  "key": "lat",
+                  "value": "28.6315"
+                },
+                {
+                  "key": "lng",
+                  "value": "77.2167"
+                },
+                {
+                  "key": "radiusKm",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Finds compatible, eligible, and available donors within radiusKm."
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Donor Operations",
+      "item": [
+        {
+          "name": "Get Incoming Requests Feed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/donor/requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "donor", "requests"]
+            },
+            "description": "Returns incoming requests matched to this donor where response is PENDING, including distance in km."
+          }
+        },
+        {
+          "name": "Get Donor Request Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/donor/requests/{{requestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "donor", "requests", "{{requestId}}"]
+            },
+            "description": "Details with recipient first name and distance. Recipient phone is populated ONLY if accepted."
+          }
+        },
+        {
+          "name": "Accept Request (First Donor Wins)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/donor/requests/{{requestId}}/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "donor", "requests", "{{requestId}}", "accept"]
+            },
+            "description": "Accepts request. First-come-first-served: returns 409 Conflict if no longer PENDING. Sets request ACCEPTED, my response ACCEPTED, all other responses EXPIRED, and returns recipient contact details."
+          }
+        },
+        {
+          "name": "Reject Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/donor/requests/{{requestId}}/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "donor", "requests", "{{requestId}}", "reject"]
+            },
+            "description": "Rejects the blood request match for this donor."
+          }
+        },
+        {
+          "name": "Get Donor Donation History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/donor/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "donor", "history"]
+            },
+            "description": "Requests accepted or completed by this donor."
+          }
+        },
+        {
+          "name": "Toggle Availability",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"available\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/donor/availability",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "donor", "availability"]
+            },
+            "description": "Toggles donor availability. Enforces 90-day donation gap rule before allowing availability to be turned ON."
+          }
+        },
+        {
+          "name": "Check Donation Eligibility",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/donor/eligibility",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "donor", "eligibility"]
+            },
+            "description": "Returns donation eligibility status, last donated date, next eligible date, and remaining gap days."
+          }
+        }
+      ]
+    }
+  ]
+}
