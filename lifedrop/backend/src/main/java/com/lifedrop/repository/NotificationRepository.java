@@ -19,6 +19,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     List<Notification> findByUserIdOrderByCreatedAtDesc(Long userId);
 
+    org.springframework.data.domain.Page<Notification> findByUserIdOrderByCreatedAtDesc(Long userId, org.springframework.data.domain.Pageable pageable);
+
     List<Notification> findByUserIdAndReadFalseOrderByCreatedAtDesc(Long userId);
 
     long countByUserIdAndReadFalse(Long userId);

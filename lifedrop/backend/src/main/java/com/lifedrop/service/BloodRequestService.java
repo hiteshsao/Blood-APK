@@ -182,15 +182,22 @@ public class BloodRequestService {
         request.setStatus(RequestStatus.CANCELLED);
         request = bloodRequestRepository.save(request);
 
-        // Mark remaining pending responses as EXPIRED
+        // Mark remaining pending responses as EXPIRED and notify donors
         List<RequestResponse> pending = requestResponseRepository.findByRequestIdAndStatus(requestId, ResponseStatus.PENDING);
+        List<User> pendingDonors = pending.stream().map(RequestResponse::getDonor).toList();
+
         for (RequestResponse rr : pending) {
             rr.setStatus(ResponseStatus.EXPIRED);
             rr.setRespondedAt(LocalDateTime.now());
         }
         requestResponseRepository.saveAll(pending);
 
-        log.info("BloodRequest ID: {} cancelled by recipient ID: {}", requestId, recipientId);
+        if (!pendingDonors.isEmpty()) {
+            notificationService.notifyRequestCancelled(request, pendingDonors);
+        }
+
+        log.info("BloodRequest ID: {} cancelled by recipient ID: {}. {} pending donors notified.",
+                requestId, recipientId, pendingDonors.size());
         int count = (int) requestResponseRepository.countByRequestId(requestId);
         return BloodRequestRecipientResponseDto.fromEntity(request, count);
     }

@@ -43,6 +43,9 @@ class UserProfileAndDonorControllerIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
+    private com.lifedrop.repository.NotificationRepository notificationRepository;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     private User savedDonor;
@@ -52,6 +55,7 @@ class UserProfileAndDonorControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        notificationRepository.deleteAll();
         userRepository.deleteAll();
 
         savedDonor = userRepository.save(User.builder()

@@ -37,6 +37,9 @@ class NearbyDonorSearchIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
+    private com.lifedrop.repository.NotificationRepository notificationRepository;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     private String recipientToken;
@@ -48,6 +51,7 @@ class NearbyDonorSearchIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        notificationRepository.deleteAll();
         userRepository.deleteAll();
 
         // 1. Recipient user searching for A+ blood
