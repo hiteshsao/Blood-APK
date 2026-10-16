@@ -74,6 +74,9 @@ class BloodRequestFlowIntegrationTest {
     private BloodRequestService bloodRequestService;
 
     @Autowired
+    private com.lifedrop.repository.ReportRepository reportRepository;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     private User recipient;
@@ -91,6 +94,7 @@ class BloodRequestFlowIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        reportRepository.deleteAll();
         notificationRepository.deleteAll();
         requestResponseRepository.deleteAll();
         bloodRequestRepository.deleteAll();

@@ -39,6 +39,15 @@ class NotificationControllerIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
+    private com.lifedrop.repository.BloodRequestRepository bloodRequestRepository;
+
+    @Autowired
+    private com.lifedrop.repository.RequestResponseRepository requestResponseRepository;
+
+    @Autowired
+    private com.lifedrop.repository.ReportRepository reportRepository;
+
+    @Autowired
     private NotificationRepository notificationRepository;
 
     @Autowired
@@ -51,7 +60,10 @@ class NotificationControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        reportRepository.deleteAll();
         notificationRepository.deleteAll();
+        requestResponseRepository.deleteAll();
+        bloodRequestRepository.deleteAll();
         userRepository.deleteAll();
 
         user1 = userRepository.save(User.builder()

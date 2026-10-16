@@ -40,19 +40,22 @@ public class BloodRequestService {
     private final UserRepository userRepository;
     private final MatchingService matchingService;
     private final NotificationService notificationService;
+    private final com.lifedrop.repository.ReportRepository reportRepository;
 
     public BloodRequestService(
             BloodRequestRepository bloodRequestRepository,
             RequestResponseRepository requestResponseRepository,
             UserRepository userRepository,
             MatchingService matchingService,
-            NotificationService notificationService
+            NotificationService notificationService,
+            com.lifedrop.repository.ReportRepository reportRepository
     ) {
         this.bloodRequestRepository = bloodRequestRepository;
         this.requestResponseRepository = requestResponseRepository;
         this.userRepository = userRepository;
         this.matchingService = matchingService;
         this.notificationService = notificationService;
+        this.reportRepository = reportRepository;
     }
 
     // ==========================================
@@ -67,6 +70,14 @@ public class BloodRequestService {
     public BloodRequestRecipientResponseDto createRequest(Long recipientId, CreateBloodRequestDto dto) {
         User recipient = userRepository.findById(recipientId)
                 .orElseThrow(() -> new NotFoundException("Recipient not found"));
+
+        // Rate limit: a recipient may create at most 3 requests per 24 hours
+        LocalDateTime cutoff24Hours = LocalDateTime.now().minusHours(24);
+        long requestsInLast24Hours = bloodRequestRepository.countByRecipientIdAndCreatedAtAfter(recipientId, cutoff24Hours);
+        if (requestsInLast24Hours >= 3) {
+            throw new com.lifedrop.exception.RateLimitException(
+                    "Rate limit exceeded: A recipient may create at most 3 blood donation requests per 24 hours.");
+        }
 
         // Radius resolution: 10 km for NORMAL, 25 km for URGENT unless specified
         double radiusKm;
@@ -428,6 +439,69 @@ public class BloodRequestService {
                             .build();
                 })
                 .toList();
+    }
+
+    // ==========================================
+    // SAFETY & REPORTING OPERATIONS
+    // ==========================================
+
+    /**
+     * Reports a fake or suspicious blood request.
+     * Enforces single report per user per request.
+     * After 3 reports, automatically marks the request CANCELLED.
+     */
+    @Transactional
+    public com.lifedrop.dto.ReportResponseDto reportRequest(Long reporterId, Long requestId, String reason) {
+        User reporter = userRepository.findById(reporterId)
+                .orElseThrow(() -> new NotFoundException("Reporter user not found"));
+
+        BloodRequest request = bloodRequestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException("Blood request not found with ID: " + requestId));
+
+        if (reportRepository.existsByRequestIdAndReporterId(requestId, reporterId)) {
+            throw new BadRequestException("You have already reported this blood request.");
+        }
+
+        com.lifedrop.entity.Report report = com.lifedrop.entity.Report.builder()
+                .reporter(reporter)
+                .request(request)
+                .reason(reason.trim())
+                .build();
+        report = reportRepository.save(report);
+
+        long reportCount = reportRepository.countByRequestId(requestId);
+        boolean cancelled = false;
+
+        // After 3 reports, mark the request CANCELLED
+        if (reportCount >= 3 && request.getStatus() != RequestStatus.CANCELLED) {
+            request.setStatus(RequestStatus.CANCELLED);
+            bloodRequestRepository.save(request);
+
+            List<RequestResponse> pending = requestResponseRepository.findByRequestIdAndStatus(requestId, ResponseStatus.PENDING);
+            for (RequestResponse rr : pending) {
+                rr.setStatus(ResponseStatus.EXPIRED);
+                rr.setRespondedAt(LocalDateTime.now());
+            }
+            requestResponseRepository.saveAll(pending);
+
+            cancelled = true;
+            log.warn("🚨 BloodRequest ID: {} reached {} reports and has been automatically CANCELLED.",
+                    requestId, reportCount);
+        }
+
+        String message = cancelled
+                ? "Request reported successfully. This request has received 3 or more reports and has been automatically cancelled."
+                : "Request reported successfully. Thank you for helping keep the LifeDrop community safe.";
+
+        return com.lifedrop.dto.ReportResponseDto.builder()
+                .reportId(report.getId())
+                .requestId(requestId)
+                .reason(report.getReason())
+                .totalReports(reportCount)
+                .requestCancelled(cancelled)
+                .message(message)
+                .reportedAt(report.getCreatedAt())
+                .build();
     }
 
     // ==========================================

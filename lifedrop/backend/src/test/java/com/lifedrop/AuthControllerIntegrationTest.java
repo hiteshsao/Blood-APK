@@ -39,11 +39,23 @@ class AuthControllerIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
+    private com.lifedrop.repository.BloodRequestRepository bloodRequestRepository;
+
+    @Autowired
+    private com.lifedrop.repository.RequestResponseRepository requestResponseRepository;
+
+    @Autowired
+    private com.lifedrop.repository.ReportRepository reportRepository;
+
+    @Autowired
     private com.lifedrop.repository.NotificationRepository notificationRepository;
 
     @BeforeEach
     void setUp() {
+        reportRepository.deleteAll();
         notificationRepository.deleteAll();
+        requestResponseRepository.deleteAll();
+        bloodRequestRepository.deleteAll();
         userRepository.deleteAll();
     }
 

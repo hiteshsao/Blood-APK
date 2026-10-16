@@ -693,6 +693,37 @@
           }
         }
       ]
+    },
+    {
+      "name": "07 Safety & Reports",
+      "item": [
+        {
+          "name": "Report Fake Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{donorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demanding unauthorized payments and submitting fraudulent paperwork\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/requests/{{requestId}}/report",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "requests", "{{requestId}}", "report"]
+            },
+            "description": "Reports a fake or fraudulent request. A user cannot report the same request twice. Upon reaching 3 reports, the request is automatically CANCELLED."
+          }
+        }
+      ]
     }
   ]
 }
