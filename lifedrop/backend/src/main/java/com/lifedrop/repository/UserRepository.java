@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -36,34 +37,39 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByRoleAndCityIgnoreCaseAndAvailableTrue(Role role, String city);
 
     /**
-     * Native Haversine query to find available donors within radiusKm matching compatible blood groups.
-     * Uses least/greatest to protect against acos floating-point rounding errors.
+     * Native Haversine query to find eligible nearby donors with distance projection.
      */
     @Query(value = """
-        SELECT u.*,
-               (6371 * acos(least(1.0, greatest(-1.0,
-                   cos(radians(:latitude)) * cos(radians(u.latitude)) *
-                   cos(radians(u.longitude) - radians(:longitude)) +
-                   sin(radians(:latitude)) * sin(radians(u.latitude))
+        SELECT u.id AS id,
+               u.name AS name,
+               u.blood_group AS bloodGroup,
+               u.city AS city,
+               u.last_donated_date AS lastDonatedDate,
+               (6371.0 * acos(least(1.0, greatest(-1.0,
+                   cos(radians(:lat)) * cos(radians(u.latitude)) *
+                   cos(radians(u.longitude) - radians(:lng)) +
+                   sin(radians(:lat)) * sin(radians(u.latitude))
                )))) AS distance
         FROM users u
         WHERE u.role = 'DONOR'
-          AND u.available = true
           AND u.active = true
-          AND u.blood_group IN (:bloodGroups)
+          AND u.available = true
+          AND u.blood_group IN (:groups)
           AND u.latitude IS NOT NULL
           AND u.longitude IS NOT NULL
-          AND (6371 * acos(least(1.0, greatest(-1.0,
-                   cos(radians(:latitude)) * cos(radians(u.latitude)) *
-                   cos(radians(u.longitude) - radians(:longitude)) +
-                   sin(radians(:latitude)) * sin(radians(u.latitude))
-               )))) <= :radiusKm
+          AND (u.last_donated_date IS NULL OR u.last_donated_date <= :eligibleBefore)
+          AND (6371.0 * acos(least(1.0, greatest(-1.0,
+                   cos(radians(:lat)) * cos(radians(u.latitude)) *
+                   cos(radians(u.longitude) - radians(:lng)) +
+                   sin(radians(:lat)) * sin(radians(u.latitude))
+               )))) < :radiusKm
         ORDER BY distance ASC
         """, nativeQuery = true)
-    List<User> findNearbyDonors(
-        @Param("latitude") double latitude,
-        @Param("longitude") double longitude,
+    List<NearbyDonorProjection> findNearbyDonors(
+        @Param("groups") Collection<String> groups,
+        @Param("lat") double lat,
+        @Param("lng") double lng,
         @Param("radiusKm") double radiusKm,
-        @Param("bloodGroups") Collection<String> bloodGroups
+        @Param("eligibleBefore") LocalDate eligibleBefore
     );
 }
