@@ -18,4 +18,8 @@ public interface NearbyDonorProjection {
     LocalDate getLastDonatedDate();
 
     Double getDistance();
+
+    Double getLatitude();
+
+    Double getLongitude();
 }

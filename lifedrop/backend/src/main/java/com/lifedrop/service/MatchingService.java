@@ -102,6 +102,8 @@ public class MatchingService {
                 .distanceKm(DistanceCalculator.roundToOneDecimal(distance))
                 .city(p.getCity())
                 .lastDonatedDate(p.getLastDonatedDate())
+                .latitude(p.getLatitude())
+                .longitude(p.getLongitude())
                 .build();
     }
 }

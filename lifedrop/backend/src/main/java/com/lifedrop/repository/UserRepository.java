@@ -44,6 +44,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
                u.name AS name,
                u.blood_group AS bloodGroup,
                u.city AS city,
+               u.latitude AS latitude,
+               u.longitude AS longitude,
                u.last_donated_date AS lastDonatedDate,
                (6371.0 * acos(least(1.0, greatest(-1.0,
                    cos(radians(:lat)) * cos(radians(u.latitude)) *

@@ -11,16 +11,18 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import axiosInstance from '../../api/axiosInstance';
+import recipientApi from '../../api/recipientApi';
 import { colors } from '../../theme/colors';
 import { fontFamilies } from '../../theme/typography';
 import { spacing, radii } from '../../theme/spacing';
+import { shadows } from '../../theme/shadows';
 import Card from '../../components/Card';
 import StatusBadge from '../../components/StatusBadge';
 import ScreenHeader from '../../components/ScreenHeader';
 import CustomButton from '../../components/CustomButton';
 import EmptyState from '../../components/EmptyState';
 import Loader from '../../components/Loader';
+import { formatTimeAgo, formatDate } from '../../utils/formatters';
 
 const FILTERS = ['All', 'Active', 'Completed'];
 
@@ -30,13 +32,16 @@ export const MyRequestsScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [actingId, setActingId] = useState(null);
+  const [error, setError] = useState(null);
 
   const fetchMyRequests = useCallback(async () => {
     try {
-      const res = await axiosInstance.get('/api/recipient/requests');
-      setRequests(res.data?.data || []);
+      setError(null);
+      const data = await recipientApi.getMyRequests();
+      setRequests(data);
     } catch (err) {
-      console.log('[Fetch My Requests Error]', err?.message);
+      console.log('[Fetch My Requests Error]', err?.response?.data || err?.message);
+      setError(err?.response?.data?.message || 'Failed to load blood requests.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -55,7 +60,7 @@ export const MyRequestsScreen = ({ navigation }) => {
   const handleCancel = (item) => {
     Alert.alert(
       'Cancel Blood Request?',
-      'Are you sure you want to cancel this request? Any pending donor notifications will be stopped.',
+      `Are you sure you want to cancel the request for "${item.patientName}"? Any ongoing donor notifications will stop.`,
       [
         { text: 'Keep Active', style: 'cancel' },
         {
@@ -64,36 +69,10 @@ export const MyRequestsScreen = ({ navigation }) => {
           onPress: async () => {
             try {
               setActingId(item.id);
-              await axiosInstance.put(`/api/recipient/requests/${item.id}/cancel`);
+              await recipientApi.cancelRequest(item.id);
               fetchMyRequests();
             } catch (err) {
               Alert.alert('Error', 'Failed to cancel request.');
-            } finally {
-              setActingId(null);
-            }
-          },
-        },
-      ]
-    );
-  };
-
-  const handleComplete = (item) => {
-    Alert.alert(
-      'Mark Donation Completed? 🩸',
-      `Did donor "${item.acceptedDonor?.name || 'the donor'}" complete the blood donation? Marking completed will update the donor's 90-day recovery record.`,
-      [
-        { text: 'Not Yet', style: 'cancel' },
-        {
-          text: 'Yes, Completed',
-          style: 'default',
-          onPress: async () => {
-            try {
-              setActingId(item.id);
-              await axiosInstance.post(`/api/recipient/requests/${item.id}/complete`);
-              Alert.alert('Thank You!', 'Blood donation marked as completed. Life saved!');
-              fetchMyRequests();
-            } catch (err) {
-              Alert.alert('Error', 'Failed to mark as completed.');
             } finally {
               setActingId(null);
             }
@@ -120,86 +99,91 @@ export const MyRequestsScreen = ({ navigation }) => {
     const isActing = actingId === item.id;
 
     return (
-      <Card style={styles.card}>
+      <Card
+        style={styles.card}
+        onPress={() => navigation.navigate('RequestStatus', { requestId: item.id })}
+      >
         <View style={styles.cardHeader}>
-          <View style={styles.bloodCircle}>
-            <Text style={styles.bloodCircleText}>{item.bloodGroup}</Text>
+          {/* Blood group badge in a red circle */}
+          <View style={styles.bloodBadgeCircle}>
+            <Text style={styles.bloodBadgeText}>{item.bloodGroup}</Text>
           </View>
 
           <View style={styles.headerInfo}>
-            <Text style={styles.patientName}>{item.patientName}</Text>
+            <Text style={styles.patientName}>{item.patientName || 'Emergency Patient'}</Text>
             <Text style={styles.subText}>
-              {item.unitsNeeded || 1} Unit(s) • 📍 {item.city || 'Bhopal'}
+              {item.unitsNeeded || 1} Unit(s) • 📍 {item.city || 'Indore'}
+            </Text>
+            <Text style={styles.timeAgoText}>
+              {formatTimeAgo(item.createdAt)}
             </Text>
           </View>
 
           <StatusBadge status={item.status} size="sm" />
         </View>
 
-        {/* Accepted Donor Contact Info */}
-        {isAccepted && item.acceptedDonor && (
-          <View style={styles.donorInfoBox}>
-            <View style={styles.donorRow}>
-              <View style={styles.donorAvatar}>
-                <Ionicons name="person" size={16} color={colors.primaryRed} />
-              </View>
-              <View style={{ flex: 1, marginLeft: spacing.sm }}>
-                <Text style={styles.donorName}>
-                  Accepted by: {item.acceptedDonor.name} ({item.acceptedDonor.bloodGroup})
-                </Text>
-                <Text style={styles.donorPhone}>
-                  📞 {item.acceptedDonor.phone || 'Phone shared'}
-                </Text>
-              </View>
-
-              {item.acceptedDonor.phone && (
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => Linking.openURL(`tel:${item.acceptedDonor.phone}`)}
-                  style={styles.callDonorBtn}
-                >
-                  <Ionicons name="call" size={16} color="#FFFFFF" />
-                  <Text style={styles.callDonorBtnText}>Call</Text>
-                </TouchableOpacity>
-              )}
+        {/* Status context row */}
+        {isAccepted && item.acceptedDonor ? (
+          <View style={styles.acceptedDonorBanner}>
+            <Ionicons name="checkmark-circle" size={18} color={colors.success} />
+            <View style={{ flex: 1, marginLeft: spacing.sm }}>
+              <Text style={styles.acceptedDonorName}>
+                Accepted by: {item.acceptedDonor.name} ({item.acceptedDonor.bloodGroup})
+              </Text>
+              <Text style={styles.acceptedDonorPhone}>
+                📞 {item.acceptedDonor.phone}
+              </Text>
             </View>
 
-            {/* Complete button */}
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => handleComplete(item)}
-              disabled={isActing}
-              style={styles.completeBtn}
-            >
-              <Ionicons name="checkmark-done" size={18} color="#FFFFFF" />
-              <Text style={styles.completeBtnText}>Mark as Completed</Text>
-            </TouchableOpacity>
+            {item.acceptedDonor.phone && (
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => Linking.openURL(`tel:${item.acceptedDonor.phone}`)}
+                style={styles.callDonorBtn}
+              >
+                <Ionicons name="call" size={14} color="#FFFFFF" />
+                <Text style={styles.callDonorBtnText}>Call</Text>
+              </TouchableOpacity>
+            )}
           </View>
-        )}
-
-        {/* Pending broadcast count */}
-        {isPending && (
-          <View style={styles.pendingInfoRow}>
-            <Ionicons name="radio" size={15} color={colors.primaryRed} />
-            <Text style={styles.pendingInfoText}>
+        ) : isPending ? (
+          <View style={styles.pendingBanner}>
+            <Ionicons name="radio-outline" size={16} color={colors.primaryRed} />
+            <Text style={styles.pendingText}>
               {item.matchedDonorCount != null
                 ? `${item.matchedDonorCount} nearby compatible donors alerted.`
-                : 'Awaiting donor response...'}
+                : 'Searching for nearby donors...'}
             </Text>
           </View>
-        )}
+        ) : isCompleted ? (
+          <View style={styles.completedBanner}>
+            <Ionicons name="heart" size={16} color={colors.primaryRed} />
+            <Text style={styles.completedText}>
+              Blood donation successfully completed. Life saved! ❤️
+            </Text>
+          </View>
+        ) : null}
 
-        {/* Cancel button while Pending */}
-        {isPending && (
+        {/* Footer Actions */}
+        <View style={styles.cardFooter}>
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => handleCancel(item)}
-            disabled={isActing}
-            style={styles.cancelRequestBtn}
+            onPress={() => navigation.navigate('RequestStatus', { requestId: item.id })}
           >
-            <Text style={styles.cancelRequestBtnText}>Cancel Request</Text>
+            <Text style={styles.viewTimelineLink}>Track Status Timeline →</Text>
           </TouchableOpacity>
-        )}
+
+          {isPending && (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => handleCancel(item)}
+              disabled={isActing}
+              style={styles.cancelLinkBtn}
+            >
+              <Text style={styles.cancelLinkText}>Cancel</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </Card>
     );
   };
@@ -208,39 +192,60 @@ export const MyRequestsScreen = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <ScreenHeader
         title="My Blood Requests"
-        subtitle="Track active requests and donor responses"
+        subtitle="Manage and track your active donation alerts"
+        rightComponent={
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate('CreateRequest', { urgency: 'NORMAL' })}
+            style={styles.headerAddBtn}
+          >
+            <Ionicons name="add" size={20} color={colors.primaryRed} />
+          </TouchableOpacity>
+        }
       />
 
-      {/* Filter Chips */}
-      <View style={styles.filterRow}>
-        {FILTERS.map((f) => (
-          <TouchableOpacity
-            key={f}
-            activeOpacity={0.7}
-            onPress={() => setActiveFilter(f)}
-            style={[
-              styles.filterChip,
-              activeFilter === f && styles.filterChipActive,
-            ]}
-          >
-            <Text
-              style={[
-                styles.filterChipText,
-                activeFilter === f && styles.filterChipTextActive,
-              ]}
+      {/* Filter Tabs (All, Active, Completed) */}
+      <View style={styles.filterBar}>
+        {FILTERS.map((tab) => {
+          const isActive = activeFilter === tab;
+          return (
+            <TouchableOpacity
+              key={tab}
+              activeOpacity={0.8}
+              onPress={() => setActiveFilter(tab)}
+              style={[styles.filterTab, isActive && styles.filterTabActive]}
             >
-              {f}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text
+                style={[
+                  styles.filterTabText,
+                  isActive && styles.filterTabTextActive,
+                ]}
+              >
+                {tab}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       {loading ? (
-        <Loader message="Loading your requests..." fullScreen />
+        <Loader message="Loading your blood requests..." fullScreen />
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle-outline" size={44} color={colors.danger} />
+          <Text style={styles.errorTitle}>Could not load requests</Text>
+          <Text style={styles.errorDesc}>{error}</Text>
+          <CustomButton
+            title="Try Again"
+            onPress={fetchMyRequests}
+            variant="secondary"
+            style={{ marginTop: spacing.md }}
+          />
+        </View>
       ) : (
         <FlatList
           data={filteredRequests}
-          keyExtractor={(item) => String(item.id || Math.random())}
+          keyExtractor={(item) => String(item.id)}
           renderItem={renderRequestItem}
           contentContainerStyle={styles.listContent}
           refreshControl={
@@ -254,10 +259,20 @@ export const MyRequestsScreen = ({ navigation }) => {
           ListEmptyComponent={
             <EmptyState
               iconName="medkit-outline"
-              title="No Blood Requests"
-              description="You have not created any requests under this filter."
-              actionTitle="Create Request"
-              onAction={() => navigation.navigate('Request Blood')}
+              title={
+                activeFilter === 'Active'
+                  ? 'No Active Requests'
+                  : activeFilter === 'Completed'
+                  ? 'No Completed Requests Yet'
+                  : 'No Blood Requests'
+              }
+              description={
+                activeFilter === 'Active'
+                  ? 'You currently have no pending or accepted blood donation requests.'
+                  : 'Broadcast a direct emergency alert to nearby donors whenever you need blood.'
+              }
+              actionTitle="Request Blood Now"
+              onAction={() => navigation.navigate('CreateRequest', { urgency: 'NORMAL' })}
             />
           }
         />
@@ -271,102 +286,109 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.pageBg,
   },
-  filterRow: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.screenPadding,
-    marginBottom: spacing.md,
-    gap: spacing.sm,
-  },
-  filterChip: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: radii.pill,
-    backgroundColor: '#FFFFFF',
+  headerAddBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#FFF1F1',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.borderPink,
   },
-  filterChipActive: {
-    backgroundColor: colors.primaryRed,
-    borderColor: colors.primaryRed,
+  filterBar: {
+    flexDirection: 'row',
+    marginHorizontal: spacing.screenPadding,
+    backgroundColor: '#F1F5F9',
+    borderRadius: radii.button,
+    padding: 4,
+    marginBottom: spacing.sm,
   },
-  filterChipText: {
+  filterTab: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: 'center',
+    borderRadius: radii.button - 2,
+  },
+  filterTabActive: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: colors.borderPink,
+    ...shadows.cardSoft,
+  },
+  filterTabText: {
     fontFamily: fontFamilies.bold,
     fontSize: 13,
-    color: colors.navyDark,
+    color: colors.muted,
   },
-  filterChipTextActive: {
-    color: '#FFFFFF',
+  filterTabTextActive: {
+    color: colors.primaryRed,
   },
   listContent: {
     paddingHorizontal: spacing.screenPadding,
     paddingBottom: spacing.xxl,
   },
   card: {
-    marginBottom: spacing.md,
     padding: spacing.lg,
+    marginVertical: spacing.xs + 2,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  bloodCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: radii.circle,
-    backgroundColor: colors.pageBg,
-    borderColor: colors.borderPink,
-    borderWidth: 1.5,
+  bloodBadgeCircle: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: colors.primaryRed,
     justifyContent: 'center',
     alignItems: 'center',
+    ...shadows.redGlow,
   },
-  bloodCircleText: {
+  bloodBadgeText: {
     fontFamily: fontFamilies.extraBold,
-    fontSize: 15,
-    color: colors.primaryRed,
+    fontSize: 16,
+    color: '#FFFFFF',
   },
   headerInfo: {
     flex: 1,
     marginLeft: spacing.md,
   },
   patientName: {
-    fontFamily: fontFamilies.bold,
+    fontFamily: fontFamilies.extraBold,
     fontSize: 16,
     color: colors.navyDark,
   },
   subText: {
-    fontFamily: fontFamilies.regular,
-    fontSize: 12,
+    fontFamily: fontFamilies.medium,
+    fontSize: 13,
     color: colors.muted,
     marginTop: 2,
   },
-  donorInfoBox: {
-    backgroundColor: '#F0FDF4',
-    borderColor: '#BBF7D0',
-    borderWidth: 1,
-    borderRadius: radii.sm,
-    padding: spacing.md,
-    marginTop: spacing.md,
+  timeAgoText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: 11,
+    color: colors.lightMuted,
+    marginTop: 1,
   },
-  donorRow: {
+  acceptedDonorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#F0FDF4',
+    padding: spacing.md,
+    borderRadius: radii.sm,
+    marginTop: spacing.md,
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
   },
-  donorAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.pageBg,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  donorName: {
+  acceptedDonorName: {
     fontFamily: fontFamilies.bold,
-    fontSize: 14,
+    fontSize: 13,
     color: '#15803D',
   },
-  donorPhone: {
+  acceptedDonorPhone: {
     fontFamily: fontFamilies.medium,
-    fontSize: 13,
+    fontSize: 12,
     color: '#166534',
     marginTop: 2,
   },
@@ -374,54 +396,87 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.success,
-    paddingVertical: 7,
-    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     borderRadius: radii.pill,
-    gap: 4,
   },
   callDonorBtnText: {
     fontFamily: fontFamilies.bold,
     fontSize: 12,
     color: '#FFFFFF',
+    marginLeft: 4,
   },
-  completeBtn: {
+  pendingBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primaryRed,
-    paddingVertical: 10,
-    borderRadius: radii.button,
-    marginTop: spacing.sm,
-    gap: 6,
-  },
-  completeBtnText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: 14,
-    color: '#FFFFFF',
-  },
-  pendingInfoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.pageBg,
-    borderRadius: radii.sm,
+    backgroundColor: '#FFF1F1',
     padding: spacing.sm,
+    borderRadius: radii.sm,
     marginTop: spacing.md,
-    gap: 6,
   },
-  pendingInfoText: {
+  pendingText: {
     fontFamily: fontFamilies.medium,
     fontSize: 12,
     color: colors.primaryRed,
+    marginLeft: 6,
+    flex: 1,
   },
-  cancelRequestBtn: {
+  completedBanner: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.sm,
-    marginTop: spacing.xs,
+    backgroundColor: '#F8FAFC',
+    padding: spacing.sm,
+    borderRadius: radii.sm,
+    marginTop: spacing.md,
   },
-  cancelRequestBtnText: {
-    fontFamily: fontFamilies.semiBold,
+  completedText: {
+    fontFamily: fontFamilies.medium,
+    fontSize: 12,
+    color: colors.navyDark,
+    marginLeft: 6,
+    flex: 1,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.md,
+    paddingTop: spacing.xs + 2,
+    borderTopWidth: 1,
+    borderTopColor: '#F8FAFC',
+  },
+  viewTimelineLink: {
+    fontFamily: fontFamilies.bold,
     fontSize: 13,
+    color: colors.primaryRed,
+  },
+  cancelLinkBtn: {
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+  },
+  cancelLinkText: {
+    fontFamily: fontFamilies.medium,
+    fontSize: 12,
+    color: colors.danger,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+  },
+  errorTitle: {
+    fontFamily: fontFamilies.extraBold,
+    fontSize: 18,
+    color: colors.navyDark,
+    marginTop: spacing.md,
+  },
+  errorDesc: {
+    fontFamily: fontFamilies.regular,
+    fontSize: 14,
     color: colors.muted,
+    textAlign: 'center',
+    marginTop: 4,
   },
 });
 
