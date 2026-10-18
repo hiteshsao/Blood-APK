@@ -1,18 +1,21 @@
 import React from 'react';
 import { StyleSheet, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import DonorHomeScreen from '../screens/donor/DonorHomeScreen';
 import DonorRequestsScreen from '../screens/donor/DonorRequestsScreen';
 import DonorHistoryScreen from '../screens/donor/DonorHistoryScreen';
+import RequestDetailScreen from '../screens/donor/RequestDetailScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import { colors } from '../theme/colors';
 import { fontFamilies } from '../theme/typography';
 import { shadows } from '../theme/shadows';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-export const DonorNavigator = () => {
+const DonorTabs = () => {
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -44,6 +47,20 @@ export const DonorNavigator = () => {
       <Tab.Screen name="History" component={DonorHistoryScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
+  );
+};
+
+export const DonorNavigator = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+      }}
+    >
+      <Stack.Screen name="DonorTabs" component={DonorTabs} />
+      <Stack.Screen name="RequestDetail" component={RequestDetailScreen} />
+    </Stack.Navigator>
   );
 };
 

@@ -11,30 +11,33 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import axiosInstance from '../../api/axiosInstance';
+import requestApi from '../../api/requestApi';
 import { colors } from '../../theme/colors';
 import { fontFamilies } from '../../theme/typography';
 import { spacing, radii } from '../../theme/spacing';
-import { shadows } from '../../theme/shadows';
 import Card from '../../components/Card';
 import StatusBadge from '../../components/StatusBadge';
 import ScreenHeader from '../../components/ScreenHeader';
 import CustomButton from '../../components/CustomButton';
 import EmptyState from '../../components/EmptyState';
 import Loader from '../../components/Loader';
+import { formatDistance, formatTimeAgo } from '../../utils/formatters';
 
-export const DonorRequestsScreen = () => {
+export const DonorRequestsScreen = ({ navigation }) => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [actingId, setActingId] = useState(null);
+  const [error, setError] = useState(null);
 
   const fetchRequests = useCallback(async () => {
     try {
-      const res = await axiosInstance.get('/api/donor/requests');
-      setRequests(res.data?.data || []);
+      setError(null);
+      const data = await requestApi.getIncomingRequests();
+      setRequests(data);
     } catch (err) {
-      console.log('[Fetch Requests Error]', err?.message);
+      console.log('[Fetch Requests Error]', err?.response?.data || err?.message);
+      setError(err?.response?.data?.message || 'Failed to load incoming requests.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -63,29 +66,38 @@ export const DonorRequestsScreen = () => {
           onPress: async () => {
             try {
               setActingId(id);
-              const res = await axiosInstance.post(`/api/donor/requests/${id}/accept`);
-              const acceptedData = res.data?.data;
+              const acceptedData = await requestApi.acceptRequest(id);
               const phone = acceptedData?.recipientPhone;
+              const name = acceptedData?.recipientFirstName || 'Recipient';
 
               Alert.alert(
                 'Request Accepted! 🎉',
-                `Thank you for being a life saver! Recipient contact: ${phone || 'Available in history'}.`,
+                `Thank you for being a life saver! Recipient ${name}'s contact: ${phone || 'Available in request details'}.`,
                 phone
                   ? [
                       {
                         text: 'Call Recipient',
                         onPress: () => Linking.openURL(`tel:${phone}`),
                       },
+                      {
+                        text: 'View Details',
+                        onPress: () => navigation.navigate('RequestDetail', { requestId: id }),
+                      },
                       { text: 'Close', style: 'cancel' },
                     ]
-                  : [{ text: 'OK' }]
+                  : [
+                      {
+                        text: 'View Details',
+                        onPress: () => navigation.navigate('RequestDetail', { requestId: id }),
+                      },
+                    ]
               );
               fetchRequests();
             } catch (err) {
               if (err?.response?.status === 409) {
                 Alert.alert(
-                  'Already Accepted',
-                  'Another generous donor just accepted this request moments ago. Thank you for your readiness!'
+                  'Another Donor Already Accepted',
+                  'Another generous donor just accepted this request moments ago. Thank you for your readiness to help!'
                 );
               } else {
                 const msg = err?.response?.data?.message || 'Failed to accept request.';
@@ -113,7 +125,7 @@ export const DonorRequestsScreen = () => {
           onPress: async () => {
             try {
               setActingId(id);
-              await axiosInstance.post(`/api/donor/requests/${id}/reject`);
+              await requestApi.rejectRequest(id);
               setRequests((prev) => prev.filter((r) => (r.requestId || r.id) !== id));
             } catch (err) {
               Alert.alert('Error', 'Failed to decline request.');
@@ -131,36 +143,46 @@ export const DonorRequestsScreen = () => {
     const isActing = actingId === id;
 
     return (
-      <Card style={styles.card}>
+      <Card
+        style={styles.card}
+        onPress={() => navigation.navigate('RequestDetail', { requestId: id })}
+      >
         <View style={styles.cardHeader}>
-          <View style={styles.bloodBadge}>
+          {/* Blood group badge in a red circle */}
+          <View style={styles.bloodBadgeCircle}>
             <Text style={styles.bloodBadgeText}>{item.bloodGroup}</Text>
           </View>
 
           <View style={styles.headerInfo}>
             <Text style={styles.patientName}>{item.patientName || 'Emergency Patient'}</Text>
             <Text style={styles.locationText}>
-              📍 {item.city || 'Bhopal'} {item.distanceKm ? `• ~${item.distanceKm.toFixed(1)} km away` : ''}
+              📍 {item.city || 'Bhopal'} {item.distanceKm != null ? `• ${formatDistance(item.distanceKm)}` : ''}
+            </Text>
+            <Text style={styles.timeAgoText}>
+              {formatTimeAgo(item.createdAt)}
             </Text>
           </View>
 
+          {/* Urgency Badge */}
           <StatusBadge status={item.urgency || 'NORMAL'} size="sm" />
         </View>
 
-        <View style={styles.detailsRow}>
-          <View style={styles.detailPill}>
-            <Ionicons name="water-outline" size={14} color={colors.primaryRed} />
-            <Text style={styles.detailPillText}>{item.unitsNeeded || 1} Unit(s) Needed</Text>
+        <View style={styles.unitsRow}>
+          <View style={styles.unitPill}>
+            <Ionicons name="water-outline" size={13} color={colors.primaryRed} />
+            <Text style={styles.unitPillText}>{item.unitsNeeded || 1} Unit(s) Needed</Text>
           </View>
         </View>
 
         {item.message ? (
           <View style={styles.messageBox}>
-            <Text style={styles.messageText}>"{item.message}"</Text>
+            <Text style={styles.messageText} numberOfLines={2}>
+              "{item.message}"
+            </Text>
           </View>
         ) : null}
 
-        {/* Action Buttons */}
+        {/* Action Buttons Row */}
         <View style={styles.actionButtonsRow}>
           <TouchableOpacity
             activeOpacity={0.8}
@@ -189,11 +211,23 @@ export const DonorRequestsScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <ScreenHeader
         title="Incoming Requests"
-        subtitle="Recipients seeking your blood group nearby"
+        subtitle="Patients in need of your blood group nearby"
       />
 
       {loading ? (
         <Loader message="Fetching requests near you..." fullScreen />
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle-outline" size={44} color={colors.danger} />
+          <Text style={styles.errorTitle}>Could not load requests</Text>
+          <Text style={styles.errorDesc}>{error}</Text>
+          <CustomButton
+            title="Try Again"
+            onPress={fetchRequests}
+            variant="secondary"
+            style={{ marginTop: spacing.md }}
+          />
+        </View>
       ) : (
         <FlatList
           data={requests}
@@ -208,12 +242,12 @@ export const DonorRequestsScreen = () => {
               tintColor={colors.primaryRed}
             />
           }
-          ListEmptyStateComponent={
+          ListEmptyComponent={
             <EmptyState
               iconName="heart-outline"
-              title="No Requests Near You"
-              description="There are no pending blood donation requests matching your area and blood type right now."
-              actionTitle="Refresh"
+              title="No requests near you right now."
+              description="There are currently no active blood donation requests matching your group in your locality."
+              actionTitle="Check Again"
               onAction={onRefresh}
             />
           }
@@ -239,12 +273,12 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
-  bloodBadge: {
+  bloodBadgeCircle: {
     width: 48,
     height: 48,
-    borderRadius: radii.circle,
+    borderRadius: 24,
     backgroundColor: colors.pageBg,
     borderColor: colors.borderPink,
     borderWidth: 1.5,
@@ -271,21 +305,26 @@ const styles = StyleSheet.create({
     color: colors.muted,
     marginTop: 2,
   },
-  detailsRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginVertical: spacing.xs,
+  timeAgoText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: 11,
+    color: colors.lightMuted,
+    marginTop: 1,
   },
-  detailPill: {
+  unitsRow: {
+    flexDirection: 'row',
+    marginTop: spacing.xs,
+  },
+  unitPill: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.secondaryBtnBg,
     paddingHorizontal: spacing.sm + 2,
-    paddingVertical: 4,
+    paddingVertical: 3,
     borderRadius: radii.pill,
     gap: 4,
   },
-  detailPillText: {
+  unitPillText: {
     fontFamily: fontFamilies.semiBold,
     fontSize: 12,
     color: colors.primaryRed,
@@ -301,6 +340,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.muted,
     fontStyle: 'italic',
+    lineHeight: 18,
   },
   actionButtonsRow: {
     flexDirection: 'row',
@@ -315,7 +355,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    height: 52,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -326,6 +366,26 @@ const styles = StyleSheet.create({
   },
   acceptBtn: {
     marginVertical: 0,
+    height: 50,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+  },
+  errorTitle: {
+    fontFamily: fontFamilies.bold,
+    fontSize: 18,
+    color: colors.navyDark,
+    marginTop: spacing.md,
+  },
+  errorDesc: {
+    fontFamily: fontFamilies.regular,
+    fontSize: 13,
+    color: colors.muted,
+    textAlign: 'center',
+    marginTop: 4,
   },
 });
 

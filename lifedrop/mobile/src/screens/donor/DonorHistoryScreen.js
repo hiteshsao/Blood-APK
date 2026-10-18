@@ -10,27 +10,32 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import axiosInstance from '../../api/axiosInstance';
+import requestApi from '../../api/requestApi';
 import { colors } from '../../theme/colors';
 import { fontFamilies } from '../../theme/typography';
 import { spacing, radii } from '../../theme/spacing';
 import Card from '../../components/Card';
 import StatusBadge from '../../components/StatusBadge';
 import ScreenHeader from '../../components/ScreenHeader';
+import CustomButton from '../../components/CustomButton';
 import EmptyState from '../../components/EmptyState';
 import Loader from '../../components/Loader';
+import { formatDate } from '../../utils/formatters';
 
 export const DonorHistoryScreen = () => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchHistory = useCallback(async () => {
     try {
-      const res = await axiosInstance.get('/api/donor/history');
-      setHistory(res.data?.data || []);
+      setError(null);
+      const data = await requestApi.getHistory();
+      setHistory(data);
     } catch (err) {
-      console.log('[Fetch History Error]', err?.message);
+      console.log('[Fetch History Error]', err?.response?.data || err?.message);
+      setError(err?.response?.data?.message || 'Failed to load donation history.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -49,26 +54,28 @@ export const DonorHistoryScreen = () => {
   const renderHistoryItem = ({ item }) => {
     const isCompleted = item.status === 'COMPLETED';
     const isAccepted = item.status === 'ACCEPTED';
+    const donationDate = item.createdAt ? formatDate(item.createdAt) : 'Recently';
 
     return (
       <Card style={styles.card}>
         <View style={styles.cardHeader}>
-          <View style={styles.bloodBadge}>
+          <View style={styles.bloodBadgeCircle}>
             <Text style={styles.bloodBadgeText}>{item.bloodGroup}</Text>
           </View>
 
           <View style={styles.headerInfo}>
             <Text style={styles.patientName}>{item.patientName || 'Emergency Patient'}</Text>
             <Text style={styles.cityText}>
-              📍 {item.city || 'Bhopal'} • {item.unitsNeeded || 1} unit(s)
+              📍 {item.city || 'Bhopal'} • {item.unitsNeeded || 1} Unit(s)
             </Text>
+            <Text style={styles.dateText}>Donated on: {donationDate}</Text>
           </View>
 
           <StatusBadge status={item.status || 'ACCEPTED'} size="sm" />
         </View>
 
-        {/* Recipient Contact revealed for accepted requests */}
-        {item.recipientPhone ? (
+        {/* Recipient Phone info for ongoing accepted requests */}
+        {item.recipientPhone && isAccepted ? (
           <View style={styles.contactRow}>
             <View style={{ flex: 1 }}>
               <Text style={styles.contactLabel}>Recipient Contact</Text>
@@ -86,13 +93,13 @@ export const DonorHistoryScreen = () => {
           </View>
         ) : null}
 
-        {/* Thank You Note */}
+        {/* Personalized Thank-You Note */}
         <View style={styles.thankYouBox}>
-          <Ionicons name="heart" size={14} color={colors.primaryRed} />
+          <Ionicons name="heart" size={16} color={colors.primaryRed} />
           <Text style={styles.thankYouText}>
             {isCompleted
-              ? 'Blood donation successfully completed. You saved a precious life!'
-              : 'You accepted this request. Please coordinate with the recipient.'}
+              ? `Blood donation completed on ${donationDate}. You saved a precious life and gave hope to a family. Thank you for your selfless act!`
+              : `You accepted this request on ${donationDate}. Please coordinate with the recipient to complete the donation.`}
           </Text>
         </View>
       </Card>
@@ -108,6 +115,18 @@ export const DonorHistoryScreen = () => {
 
       {loading ? (
         <Loader message="Loading your donation journey..." fullScreen />
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle-outline" size={44} color={colors.danger} />
+          <Text style={styles.errorTitle}>Could not load history</Text>
+          <Text style={styles.errorDesc}>{error}</Text>
+          <CustomButton
+            title="Try Again"
+            onPress={fetchHistory}
+            variant="secondary"
+            style={{ marginTop: spacing.md }}
+          />
+        </View>
       ) : (
         <FlatList
           data={history}
@@ -126,7 +145,7 @@ export const DonorHistoryScreen = () => {
             <EmptyState
               iconName="heart-outline"
               title="No Donation History Yet"
-              description="When you accept requests and help patients, your contributions will appear here."
+              description="When you accept requests and help patients in need, your completed contributions will appear here."
             />
           }
         />
@@ -153,10 +172,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.sm,
   },
-  bloodBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: radii.circle,
+  bloodBadgeCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: colors.pageBg,
     borderColor: colors.borderPink,
     borderWidth: 1.5,
@@ -165,7 +184,7 @@ const styles = StyleSheet.create({
   },
   bloodBadgeText: {
     fontFamily: fontFamilies.extraBold,
-    fontSize: 15,
+    fontSize: 16,
     color: colors.primaryRed,
   },
   headerInfo: {
@@ -174,7 +193,7 @@ const styles = StyleSheet.create({
   },
   patientName: {
     fontFamily: fontFamilies.bold,
-    fontSize: 15,
+    fontSize: 16,
     color: colors.navyDark,
   },
   cityText: {
@@ -182,6 +201,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.muted,
     marginTop: 2,
+  },
+  dateText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: 11,
+    color: colors.lightMuted,
+    marginTop: 1,
   },
   contactRow: {
     flexDirection: 'row',
@@ -218,18 +243,40 @@ const styles = StyleSheet.create({
   },
   thankYouBox: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: colors.secondaryBtnBg,
-    padding: spacing.sm,
+    borderColor: colors.borderPink,
+    borderWidth: 1,
+    padding: spacing.md,
     borderRadius: radii.sm,
     marginTop: spacing.sm,
-    gap: 6,
+    gap: 8,
   },
   thankYouText: {
     fontFamily: fontFamilies.medium,
     fontSize: 12,
     color: colors.primaryDark,
     flex: 1,
+    lineHeight: 18,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+  },
+  errorTitle: {
+    fontFamily: fontFamilies.bold,
+    fontSize: 18,
+    color: colors.navyDark,
+    marginTop: spacing.md,
+  },
+  errorDesc: {
+    fontFamily: fontFamilies.regular,
+    fontSize: 13,
+    color: colors.muted,
+    textAlign: 'center',
+    marginTop: 4,
   },
 });
 
