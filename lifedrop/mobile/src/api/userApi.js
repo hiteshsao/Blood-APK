@@ -55,6 +55,15 @@ export const userApi = {
     });
     return response.data?.data;
   },
+
+  /**
+   * Permanently delete user account and anonymize all personal data
+   * @returns {Promise<object>}
+   */
+  async deleteAccount() {
+    const response = await axiosInstance.delete('/api/users/me');
+    return response.data;
+  },
 };
 
 export default userApi;

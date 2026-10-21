@@ -571,7 +571,7 @@ export default function RecipientDashboard() {
               {/* City */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  City / Hospital Locality *
+                  City / Locality *
                 </label>
                 <input
                   type="text"
@@ -612,7 +612,7 @@ export default function RecipientDashboard() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3">
                 <div>
                   <span className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                    Hospital / Destination Coordinates
+                    Destination / Meeting Coordinates
                   </span>
                   <span className="text-[11px] text-slate-500">
                     Used to calculate proximity to nearby donors.
@@ -663,13 +663,13 @@ export default function RecipientDashboard() {
             {/* Message */}
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Hospital Details / Note to Donors (Optional)
+                Location Details / Note to Donors (Optional)
               </label>
               <textarea
                 rows={3}
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
-                placeholder="e.g. Patient admitted at City Hospital ICU, Ward 3. Please call as soon as you arrive."
+                placeholder="e.g. Room 304, Near Main Entrance. Please call as soon as you arrive."
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-semibold text-navy-900 focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>

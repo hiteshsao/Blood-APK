@@ -323,7 +323,7 @@ export const DonorHomeScreen = ({ navigation }) => {
         <View style={styles.disclaimerBox}>
           <Ionicons name="shield-checkmark" size={14} color={colors.muted} />
           <Text style={styles.disclaimerText}>
-            Zero intermediaries: No hospitals, no blood banks, zero administrative fees. 100% direct peer-to-peer life connection.
+            Zero intermediaries: Direct peer-to-peer voluntary donor network, zero administrative fees. 100% direct connection.
           </Text>
         </View>
       </ScrollView>

@@ -37,6 +37,7 @@ export const ProfileScreen = () => {
   const [updatingAvailability, setUpdatingAvailability] = useState(false);
   const [updatingLocation, setUpdatingLocation] = useState(false);
   const [locationFeedback, setLocationFeedback] = useState('');
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   // Edit Profile Modal State
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -183,6 +184,35 @@ export const ProfileScreen = () => {
         },
       },
     ]);
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? All your personal information (name, phone number, location, push tokens) will be permanently anonymized. This action is permanent and cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Forever',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setDeletingAccount(true);
+              await userApi.deleteAccount();
+              Alert.alert('Account Deleted', 'Your account has been deleted and personal data anonymized.');
+              await logout();
+            } catch (err) {
+              Alert.alert(
+                'Delete Failed',
+                err?.response?.data?.message || 'Failed to delete account. Please try again.'
+              );
+            } finally {
+              setDeletingAccount(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const initials = (user?.name || 'LD')
@@ -348,7 +378,7 @@ export const ProfileScreen = () => {
           <Text style={styles.aboutTitle}>Zero Intermediaries Guarantee</Text>
           <Text style={styles.aboutDesc}>
             LifeDrop connects donors and recipients directly with 100% privacy and transparency.
-            No hospitals, no blood banks, zero administrative fees.
+            Direct peer-to-peer voluntary network, zero administrative fees.
           </Text>
         </Card>
 
@@ -360,6 +390,28 @@ export const ProfileScreen = () => {
           style={styles.logoutBtn}
           textStyle={{ color: colors.danger }}
         />
+
+        {/* Delete My Account Option (Play Store Compliance) */}
+        <View style={styles.dangerZoneCard}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={styles.deleteAccountBtn}
+            onPress={handleDeleteAccount}
+            disabled={deletingAccount}
+          >
+            {deletingAccount ? (
+              <ActivityIndicator size="small" color={colors.danger} />
+            ) : (
+              <View style={styles.deleteAccountRow}>
+                <Ionicons name="trash-outline" size={16} color={colors.danger} />
+                <Text style={styles.deleteAccountBtnText}>Delete My Account</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          <Text style={styles.deleteAccountDesc}>
+            Permanently anonymizes your personal information (name, phone, location, push tokens) and deactivates your account.
+          </Text>
+        </View>
       </ScrollView>
 
       {/* Edit Profile Modal */}
@@ -402,7 +454,7 @@ export const ProfileScreen = () => {
 
               <InputField
                 label="Phone Number (10 digits)"
-                placeholder="e.g. 9826012345"
+                placeholder="10-digit mobile number"
                 value={editPhone}
                 onChangeText={setEditPhone}
                 keyboardType="phone-pad"
@@ -652,7 +704,36 @@ const styles = StyleSheet.create({
   logoutBtn: {
     borderColor: '#FECACA',
     backgroundColor: '#FFFFFF',
+    marginBottom: spacing.md,
+  },
+  dangerZoneCard: {
+    alignItems: 'center',
     marginBottom: spacing.xl,
+    paddingHorizontal: spacing.md,
+  },
+  deleteAccountBtn: {
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    borderRadius: radii.sm,
+  },
+  deleteAccountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  deleteAccountBtnText: {
+    fontFamily: fontFamilies.semiBold,
+    fontSize: 13,
+    color: colors.danger,
+    textDecorationLine: 'underline',
+  },
+  deleteAccountDesc: {
+    fontFamily: fontFamilies.regular,
+    fontSize: 11,
+    color: colors.muted,
+    textAlign: 'center',
+    marginTop: 4,
+    lineHeight: 15,
   },
   modalOverlay: {
     flex: 1,

@@ -380,13 +380,13 @@ export const SosStatusScreen = ({ route, navigation }) => {
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Hospital / City:</Text>
-              <Text style={styles.detailValue}>{request.city || 'Nearby Hospital'}</Text>
+              <Text style={styles.detailLabel}>Location / City:</Text>
+              <Text style={styles.detailValue}>{request.city || 'Indore'}</Text>
             </View>
 
             {request.message ? (
               <View style={styles.noteBox}>
-                <Text style={styles.noteTitle}>Note / Hospital Info:</Text>
+                <Text style={styles.noteTitle}>Emergency Notes / Landmark:</Text>
                 <Text style={styles.noteText}>{request.message}</Text>
               </View>
             ) : null}

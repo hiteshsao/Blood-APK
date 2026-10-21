@@ -74,7 +74,7 @@ export default function Register() {
     if (!formData.phone.trim()) {
       errors.phone = 'Phone number is required';
     } else if (!/^\d{10}$/.test(formData.phone.trim())) {
-      errors.phone = 'Phone must be a valid 10-digit number (e.g., 9876543210)';
+      errors.phone = 'Phone must be a valid 10-digit number';
     }
 
     if (role === 'DONOR') {
@@ -296,7 +296,7 @@ export default function Register() {
                   maxLength={10}
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '') })}
-                  placeholder="9876543210"
+                  placeholder="10-digit mobile number"
                   className={`w-full bg-slate-50 border rounded-xl px-4 py-3 text-sm font-semibold text-navy-900 focus:outline-none focus:ring-2 ${
                     fieldErrors.phone ? 'border-red-400 focus:ring-red-400 bg-red-50/30' : 'border-slate-200 focus:ring-primary-500'
                   }`}

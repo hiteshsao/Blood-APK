@@ -8,27 +8,26 @@
     "userInterfaceStyle": "light",
     "backgroundColor": "#FFF5F5",
     "splash": {
-      "backgroundColor": "#FFF5F5",
-      "resizeMode": "contain"
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFF5F5"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.lifedrop.mobile",
+      "bundleIdentifier": "com.lifedrop.app",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "LifeDrop needs your location to connect you with nearby blood donors and recipients."
       }
     },
     "android": {
-      "package": "com.lifedrop.mobile",
+      "package": "com.lifedrop.app",
       "adaptiveIcon": {
-        "backgroundColor": "#991B1B",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/android-icon-foreground.png"
       },
       "permissions": [
-        "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
         "POST_NOTIFICATIONS"
       ],
       "config": {

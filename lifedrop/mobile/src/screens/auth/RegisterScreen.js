@@ -287,7 +287,7 @@ export const RegisterScreen = ({ navigation }) => {
 
             <InputField
               label="Mobile Number (10 digits)"
-              placeholder="e.g. 9826012345"
+              placeholder="10-digit mobile number"
               value={phone}
               onChangeText={setPhone}
               keyboardType="phone-pad"

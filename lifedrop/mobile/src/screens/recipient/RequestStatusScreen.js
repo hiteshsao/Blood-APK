@@ -250,7 +250,7 @@ export const RequestStatusScreen = ({ route, navigation }) => {
               <View style={{ flex: 1, marginLeft: spacing.sm }}>
                 <Text style={styles.acceptedDonorTitle}>Donor Accepted! 🎉</Text>
                 <Text style={styles.acceptedDonorSubtitle}>
-                  Please call the donor immediately to coordinate hospital location.
+                  Please call the donor immediately to coordinate meeting location.
                 </Text>
               </View>
             </View>

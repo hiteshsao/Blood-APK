@@ -46,7 +46,7 @@ export const SosBottomSheet = ({
       setPatientName(user?.name ? `${user.name} (Patient)` : '');
       const defaultGroup = user?.bloodGroup ? user.bloodGroup.replace('_POSITIVE', '+').replace('_NEGATIVE', '-') : 'O+';
       setBloodGroup(defaultGroup);
-      setMessage('URGENT: Patient needs blood immediately at hospital.');
+      setMessage('URGENT: Patient needs voluntary blood donation immediately.');
 
       // Auto-detect location
       detectGps();
@@ -227,7 +227,7 @@ export const SosBottomSheet = ({
             {/* 3. Auto-detected Location */}
             <View style={styles.inputGroup}>
               <View style={styles.labelWithAction}>
-                <Text style={styles.fieldLabel}>Hospital / Patient GPS Location *</Text>
+                <Text style={styles.fieldLabel}>Patient GPS Location *</Text>
                 <TouchableOpacity
                   onPress={detectGps}
                   disabled={locLoading}
@@ -266,12 +266,12 @@ export const SosBottomSheet = ({
 
             {/* 4. Note Line */}
             <View style={styles.inputGroup}>
-              <Text style={styles.fieldLabel}>Emergency Notes & Hospital Details</Text>
+              <Text style={styles.fieldLabel}>Emergency Notes & Location Details</Text>
               <View style={[styles.inputWrapper, { height: 75, alignItems: 'flex-start' }]}>
                 <TextInput
                   value={message}
                   onChangeText={setMessage}
-                  placeholder="Mention Hospital name, Ward/ICU bed number, or contact instructions..."
+                  placeholder="Mention location landmark, room bed number, or contact instructions..."
                   placeholderTextColor={colors.lightMuted}
                   multiline
                   numberOfLines={3}

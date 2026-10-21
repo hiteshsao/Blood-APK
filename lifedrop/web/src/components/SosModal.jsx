@@ -436,7 +436,7 @@ export default function SosModal({
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-xs font-black text-slate-700 uppercase tracking-wider">
-                      Location / Hospital City *
+                      Location / City *
                     </label>
                   </div>
                   <input
@@ -492,13 +492,13 @@ export default function SosModal({
               {/* Note Line */}
               <div>
                 <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
-                  Emergency Notes / Hospital Ward (Optional)
+                  Emergency Notes / Location Details (Optional)
                 </label>
                 <input
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="e.g. ICU Ward 4, MY Hospital. Surgery scheduled in 2 hours."
+                  placeholder="e.g. Room 304, Near City Center. Surgery scheduled in 2 hours."
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-900"
                 />
               </div>

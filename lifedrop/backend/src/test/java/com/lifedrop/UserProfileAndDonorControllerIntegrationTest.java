@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -270,5 +271,23 @@ class UserProfileAndDonorControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(turnOn)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    @DisplayName("8. Delete account anonymizes user data and deactivates account")
+    void testDeleteAccountAnonymizesData() throws Exception {
+        mockMvc.perform(delete("/api/users/me")
+                        .header("Authorization", "Bearer " + donorToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        User anonymized = userRepository.findById(savedDonor.getId()).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals("Deleted User", anonymized.getName());
+        org.junit.jupiter.api.Assertions.assertEquals("0000000000", anonymized.getPhone());
+        org.junit.jupiter.api.Assertions.assertFalse(Boolean.TRUE.equals(anonymized.getActive()));
+        org.junit.jupiter.api.Assertions.assertFalse(Boolean.TRUE.equals(anonymized.getAvailable()));
+        org.junit.jupiter.api.Assertions.assertNull(anonymized.getPushToken());
+        org.junit.jupiter.api.Assertions.assertNull(anonymized.getLatitude());
+        org.junit.jupiter.api.Assertions.assertNull(anonymized.getLongitude());
     }
 }

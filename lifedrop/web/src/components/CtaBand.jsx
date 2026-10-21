@@ -54,7 +54,7 @@ export default function CtaBand() {
         </div>
 
         <p className="mt-8 text-xs text-red-200">
-          Pure voluntary community initiative • Zero hospital fees • Direct peer-to-peer contact
+          Pure voluntary community initiative • Zero administrative fees • Direct peer-to-peer contact
         </p>
 
       </div>

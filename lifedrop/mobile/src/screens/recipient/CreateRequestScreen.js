@@ -495,7 +495,7 @@ export const CreateRequestScreen = ({ route, navigation }) => {
           <View style={styles.disclaimerRow}>
             <Ionicons name="shield-checkmark" size={14} color={colors.muted} />
             <Text style={styles.disclaimerText}>
-              LifeDrop connects directly with donors. No hospital fees, no blood bank charges. 100% voluntary.
+              LifeDrop connects directly with donors. Zero administrative fees, zero middleman charges. 100% voluntary.
             </Text>
           </View>
 

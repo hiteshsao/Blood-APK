@@ -4,7 +4,7 @@ LifeDrop is a direct peer-to-peer blood donation network connecting only two typ
 1. **DONOR** — A generous individual willing to donate blood.
 2. **RECIPIENT** — A person or family member in need of blood.
 
-> **Zero Intermediaries**: LifeDrop has **NO** hospitals, **NO** blood banks, **NO** trauma centers, and **NO** administrative inventory. Donors connect directly with recipients.
+> **Zero Intermediaries**: LifeDrop operates as a direct peer-to-peer network. Zero administrative intermediaries, zero middleman inventory, and zero commercial fees. Donors connect directly with recipients during critical emergency moments.
 
 ---
 

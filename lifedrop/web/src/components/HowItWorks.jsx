@@ -85,7 +85,7 @@ export default function HowItWorks() {
 
                 <div className="mt-6 pt-4 border-t border-slate-100 text-xs font-semibold text-slate-400 group-hover:text-primary-600 transition-colors">
                   {idx === 0 && 'Quick onboarding'}
-                  {idx === 1 && 'No hospital bureaucracy'}
+                  {idx === 1 && 'Zero bureaucratic delays'}
                   {idx === 2 && 'Smart Haversine radius'}
                   {idx === 3 && 'Direct lifesaving donation'}
                 </div>

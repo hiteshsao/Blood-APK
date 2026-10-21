@@ -25,6 +25,4 @@ public class DonorResponseDto {
     private Double distanceKm;
     private String city;
     private LocalDate lastDonatedDate;
-    private Double latitude;
-    private Double longitude;
 }

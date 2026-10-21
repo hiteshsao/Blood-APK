@@ -34,10 +34,10 @@ export default function Terms() {
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-navy-900 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-600" />
-              <span>2. Emergency Nature & Hospital Verification</span>
+              <span>2. Emergency Nature & Clinical Verification</span>
             </h2>
             <p>
-              LifeDrop connects willing voluntary donors to emergency recipients in critical situations. All transfusions and medical procedures must be performed by certified clinical professionals in licensed hospital facilities. LifeDrop does not administer medical treatments or test blood units directly.
+              LifeDrop connects willing voluntary donors to emergency recipients in critical situations. All transfusions and medical procedures must be performed by qualified clinical professionals in licensed healthcare facilities. LifeDrop does not administer medical treatments or test blood units directly.
             </p>
           </section>
 

@@ -368,7 +368,7 @@ export default function EmergencySos() {
                 {/* City */}
                 <div>
                   <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
-                    City / Hospital Location *
+                    City / Location *
                   </label>
                   <input
                     type="text"
@@ -444,13 +444,13 @@ export default function EmergencySos() {
               {/* Message Note */}
               <div>
                 <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
-                  Emergency Notes / Hospital Ward (Optional)
+                  Emergency Notes / Location Details (Optional)
                 </label>
                 <textarea
                   rows={2}
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  placeholder="Mention hospital ward, contact person, or urgent surgical requirement..."
+                  placeholder="Mention location landmark, contact person, or urgent surgical requirement..."
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 font-normal"
                 />
               </div>

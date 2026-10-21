@@ -234,7 +234,7 @@ export const RequestDetailScreen = ({ route, navigation }) => {
               <View style={{ flex: 1, marginLeft: spacing.sm }}>
                 <Text style={styles.acceptedTitle}>You Accepted This Request! 🎉</Text>
                 <Text style={styles.acceptedSubtitle}>
-                  Contact {recipientName} directly to coordinate hospital location.
+                  Contact {recipientName} directly to coordinate meeting location.
                 </Text>
               </View>
             </View>

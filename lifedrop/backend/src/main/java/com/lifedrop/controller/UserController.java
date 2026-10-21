@@ -70,4 +70,11 @@ public class UserController {
         UserProfileResponse updated = userService.updatePushToken(principal.getId(), request);
         return ResponseEntity.ok(ApiResponse.success("Push token updated successfully", updated));
     }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/me")
+    @Operation(summary = "Delete and permanently anonymize authenticated user account")
+    public ResponseEntity<ApiResponse<Void>> deleteMyAccount(@AuthenticationPrincipal UserPrincipal principal) {
+        userService.deleteAccount(principal.getId());
+        return ResponseEntity.ok(ApiResponse.success("Account deleted and personal data anonymized successfully", null));
+    }
 }

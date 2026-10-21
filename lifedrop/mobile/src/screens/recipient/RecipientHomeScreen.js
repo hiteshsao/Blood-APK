@@ -335,7 +335,7 @@ export const RecipientHomeScreen = ({ navigation }) => {
           <View style={styles.zeroIntermediariesStrip}>
             <Ionicons name="shield-checkmark" size={14} color={colors.muted} />
             <Text style={styles.zeroIntermediariesText}>
-              Zero intermediaries: No hospitals, no blood banks, zero administrative fees.
+              Zero intermediaries: Direct peer-to-peer voluntary donor network, zero administrative fees.
             </Text>
           </View>
         </Card>

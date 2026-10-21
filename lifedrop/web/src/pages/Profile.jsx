@@ -12,7 +12,8 @@ import {
   Save,
   Phone,
   Mail,
-  ShieldCheck
+  ShieldCheck,
+  Trash2
 } from 'lucide-react';
 import axiosInstance from '../api/axiosInstance';
 import { useAuth } from '../context/AuthContext';
@@ -144,6 +145,21 @@ export default function Profile() {
       toast.error(err.response?.data?.message || 'Failed to update profile.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await axiosInstance.delete('/api/users/me');
+      toast.success('Your account has been deleted and personal data anonymized.');
+      logout();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete account.');
+      setDeleting(false);
     }
   };
 
@@ -386,6 +402,58 @@ export default function Profile() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Danger Zone: Account Deletion (Play Store / Privacy Compliance) */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-red-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h4 className="text-base font-bold text-red-900 flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-red-600" />
+              Account & Data Management
+            </h4>
+            <p className="text-xs text-slate-500 mt-1 max-w-xl">
+              Permanently delete your account and anonymize all personal data (name, phone, coordinates, push tokens). This action cannot be reversed.
+            </p>
+          </div>
+          <button
+            onClick={() => setDeleteModalOpen(true)}
+            className="px-4 py-2.5 rounded-xl border border-red-300 text-red-600 hover:bg-red-50 font-bold text-xs transition-colors shrink-0"
+          >
+            Delete My Account
+          </button>
+        </div>
+
+        {/* Delete Confirmation Modal */}
+        {deleteModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/60 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100">
+              <div className="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mb-4">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-extrabold text-navy-950 mb-2">Delete Account Forever?</h3>
+              <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                This action is permanent. Your personal details (name, phone number, GPS coordinates, device push tokens) will be completely anonymized in accordance with Google Play and privacy guidelines.
+              </p>
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setDeleteModalOpen(false)}
+                  disabled={deleting}
+                  className="px-4 py-2 rounded-xl text-slate-600 font-bold text-xs hover:bg-slate-100 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteAccount}
+                  disabled={deleting}
+                  className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-all shadow-md shadow-red-500/20 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {deleting ? 'Deleting...' : 'Yes, Delete Account'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

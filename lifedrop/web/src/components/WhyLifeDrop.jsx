@@ -26,7 +26,7 @@ export default function WhyLifeDrop() {
       title: 'Instant Alerts',
       subtitle: 'Direct Push During Golden Hour',
       description:
-        'Emergency notifications dispatch instantly to matched donors via push tokens and in-app feeds, bypassing hospital queues and bureaucratic bottlenecks.',
+        'Emergency notifications dispatch instantly to matched donors via push tokens and in-app feeds, bypassing slow administrative queues and bureaucratic bottlenecks.',
       icon: BellRing,
       gradient: 'from-amber-500 to-red-600',
       badge: 'Zero Middlemen',
@@ -46,7 +46,7 @@ export default function WhyLifeDrop() {
             Why Choose LifeDrop?
           </h2>
           <p className="mt-4 text-base sm:text-lg text-slate-600">
-            Engineered solely for donors and recipients. No blood banks, no commercial brokers, no delays.
+            Engineered solely for donors and recipients. Direct peer-to-peer connection, zero commercial brokers, zero delays.
           </p>
         </div>
 

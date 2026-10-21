@@ -93,6 +93,26 @@ public class UserService {
         return UserProfileResponse.fromUser(saved);
     }
 
+    /**
+     * Anonymizes all personal identifiable data and deactivates the user account.
+     */
+    @Transactional
+    public void deleteAccount(Long userId) {
+        User user = getUserById(userId);
+        String anonymizedId = java.util.UUID.randomUUID().toString().substring(0, 8);
+        user.setName("Deleted User");
+        user.setEmail("deleted_" + user.getId() + "_" + anonymizedId + "@anonymized.local");
+        user.setPhone("0000000000");
+        user.setPushToken(null);
+        user.setLatitude(null);
+        user.setLongitude(null);
+        user.setActive(false);
+        user.setAvailable(false);
+        user.setPassword("{noop}DELETED_" + java.util.UUID.randomUUID());
+
+        userRepository.save(user);
+    }
+
     private User getUserById(Long userId) {
         if (userId == null) {
             throw new BadRequestException("User ID cannot be null");

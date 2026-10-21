@@ -65,7 +65,7 @@ export default function BloodRequests() {
             urgency: 'URGENT',
             city: 'Indore',
             status: 'PENDING',
-            message: 'Urgent requirement at central medical hospital ICU.',
+            message: 'Urgent voluntary blood requirement for surgery.',
           },
           {
             id: 102,
@@ -369,7 +369,7 @@ export default function BloodRequests() {
                     required
                     value={reportReason}
                     onChange={(e) => setReportReason(e.target.value)}
-                    placeholder="E.g., Fraudulent contact, Commercial selling, Incorrect hospital details, Patient already discharged..."
+                    placeholder="E.g., Fraudulent contact, Commercial selling, Incorrect location details, Patient already discharged..."
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
