@@ -4,11 +4,11 @@
     "slug": "lifedrop",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/blood.png",
     "userInterfaceStyle": "light",
     "backgroundColor": "#FFF5F5",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/blood.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFF5F5"
     },
@@ -23,12 +23,14 @@
       "package": "com.lifedrop.app",
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
-        "foregroundImage": "./assets/android-icon-foreground.png"
+        "foregroundImage": "./assets/blood.png"
       },
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "POST_NOTIFICATIONS"
+        "POST_NOTIFICATIONS",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
       "config": {
         "googleMaps": {
@@ -37,7 +39,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/blood.png"
     },
     "plugins": [
       "expo-secure-store",
@@ -51,12 +53,17 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/icon.png",
+          "icon": "./assets/blood.png",
           "color": "#DC2626"
         }
       ],
       "expo-splash-screen",
       "expo-status-bar"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2823636c-bd11-46ba-9c97-79e11d0f3dbc"
+      }
+    }
   }
 }
