@@ -24,6 +24,7 @@ import { spacing, radii } from '../../theme/spacing';
 import { shadows } from '../../theme/shadows';
 import Card from '../../components/Card';
 import ScreenHeader from '../../components/ScreenHeader';
+import NotificationBell from '../../components/NotificationBell';
 import CustomButton from '../../components/CustomButton';
 import InputField from '../../components/InputField';
 import BloodGroupPicker from '../../components/BloodGroupPicker';
@@ -197,17 +198,20 @@ export const ProfileScreen = () => {
         title="My Profile"
         subtitle="Account, location and privacy settings"
         rightComponent={
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => {
-              setEditError(null);
-              setEditModalVisible(true);
-            }}
-            style={styles.editHeaderBtn}
-          >
-            <Feather name="edit-3" size={16} color={colors.primaryRed} />
-            <Text style={styles.editHeaderBtnText}>Edit</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <NotificationBell style={{ marginRight: 8 }} />
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                setEditError(null);
+                setEditModalVisible(true);
+              }}
+              style={styles.editHeaderBtn}
+            >
+              <Feather name="edit-3" size={16} color={colors.primaryRed} />
+              <Text style={styles.editHeaderBtnText}>Edit</Text>
+            </TouchableOpacity>
+          </View>
         }
       />
 

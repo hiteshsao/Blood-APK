@@ -35,11 +35,24 @@ export const userApi = {
 
   /**
    * Register or update Expo push notification token
-   * @param {string} pushToken
+   * @param {string|null} pushToken
    * @returns {Promise<object>} UserProfileResponse
    */
   async updatePushToken(pushToken) {
-    const response = await axiosInstance.put('/api/users/push-token', { pushToken });
+    const response = await axiosInstance.put('/api/users/push-token', {
+      pushToken: pushToken || null,
+    });
+    return response.data?.data;
+  },
+
+  /**
+   * Clear device push token on logout
+   * @returns {Promise<object>} UserProfileResponse
+   */
+  async clearPushToken() {
+    const response = await axiosInstance.put('/api/users/push-token', {
+      pushToken: null,
+    });
     return response.data?.data;
   },
 };

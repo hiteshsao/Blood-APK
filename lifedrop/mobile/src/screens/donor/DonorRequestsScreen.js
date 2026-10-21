@@ -18,6 +18,7 @@ import { spacing, radii } from '../../theme/spacing';
 import Card from '../../components/Card';
 import StatusBadge from '../../components/StatusBadge';
 import ScreenHeader from '../../components/ScreenHeader';
+import NotificationBell from '../../components/NotificationBell';
 import CustomButton from '../../components/CustomButton';
 import EmptyState from '../../components/EmptyState';
 import Loader from '../../components/Loader';
@@ -212,6 +213,7 @@ export const DonorRequestsScreen = ({ navigation }) => {
       <ScreenHeader
         title="Incoming Requests"
         subtitle="Patients in need of your blood group nearby"
+        rightComponent={<NotificationBell />}
       />
 
       {loading ? (

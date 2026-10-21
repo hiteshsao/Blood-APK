@@ -49,6 +49,13 @@
           "locationWhenInUsePermission": "LifeDrop needs your location to connect you with nearby blood donors and recipients."
         }
       ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#DC2626"
+        }
+      ],
       "expo-splash-screen",
       "expo-status-bar"
     ]

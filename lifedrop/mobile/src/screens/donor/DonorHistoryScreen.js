@@ -17,6 +17,7 @@ import { spacing, radii } from '../../theme/spacing';
 import Card from '../../components/Card';
 import StatusBadge from '../../components/StatusBadge';
 import ScreenHeader from '../../components/ScreenHeader';
+import NotificationBell from '../../components/NotificationBell';
 import CustomButton from '../../components/CustomButton';
 import EmptyState from '../../components/EmptyState';
 import Loader from '../../components/Loader';
@@ -111,6 +112,7 @@ export const DonorHistoryScreen = () => {
       <ScreenHeader
         title="Donation History"
         subtitle="Your life-saving contributions to the community"
+        rightComponent={<NotificationBell />}
       />
 
       {loading ? (

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import authApi from '../api/authApi';
+import userApi from '../api/userApi';
 import { TOKEN_STORAGE_KEY, USER_STORAGE_KEY, setOnUnauthorizedCallback } from '../api/axiosInstance';
 
 const AuthContext = createContext(null);
@@ -46,6 +47,11 @@ export const AuthProvider = ({ children }) => {
 
   // Logout handler
   const logout = useCallback(async () => {
+    try {
+      await userApi.clearPushToken();
+    } catch (err) {
+      // ignore network errors during logout
+    }
     setToken(null);
     setUser(null);
     await saveToStorage(TOKEN_STORAGE_KEY, null);

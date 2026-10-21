@@ -1,0 +1,62 @@
+Project dekhne ka poora tarika
+Step 1: Project folder kholo
+
+Antigravity me File > Open Folder se lifedrop folder kholo. Andar backend, web aur mobile dikhne chahiye.
+
+Step 2: Backend chalao
+
+Pehla terminal kholo:
+
+cd backend
+
+$env:DB_PASS='hitesh1312'
+.\mvnw.cmd spring-boot:run
+ -Dspring-boot.run.profiles=dev
+
+
+Ise chalte rehne do.
+
+Step 3: Mobile app ka server chalao
+
+Naya terminal kholo (backend wala band mat karna):
+
+cd mobile
+npm install
+npx expo start
+
+Terminal me ek QR code aayega. Ise bhi chalte rehne do.
+
+Step 4: Phone me Expo Go se kholo
+Phone me Expo Go install karo (Play Store se).
+Phone aur PC same Wi-Fi par rakho.
+Expo Go kholo aur Scan QR code dabao.
+Terminal ka QR scan karo.
+
+App phone me khul jayega. Pehli baar 1-2 minute lag sakte hain.
+
+Step 5: PC par bhi phone ki screen dekho (scrcpy)
+Phone USB se PC me lagao (USB debugging ON).
+Teesra terminal kholo aur likho: scrcpy
+Phone ki screen PC par window me aa jayegi. Mouse se click karke app chala sakte ho.
+Is window ko Antigravity ke bagal me rakh lo. Code badloge to phone aur PC dono par turant update dikhega.
+Total 3 terminal chalte rahenge
+Terminal	Command	Kaam
+1	.\mvnw spring-boot:run	Backend
+2	npx expo start	Mobile app ka server (QR yahin aata hai)
+3	scrcpy	Phone ki screen PC par
+Zaroori: backend ka address
+
+App ko backend localhost par nahi milega. mobile folder ki .env file me PC ka IP likho:
+
+Terminal me ipconfig chalao.
+IPv4 Address dekho (jaise 192.168.1.5).
+.env me likho: EXPO_PUBLIC_API_URL=http://192.168.1.5:8080
+Expo terminal me Ctrl + C karke dobara npx expo start chalao.
+Agar QR scan ke baad connect na ho
+Phone aur PC ka Wi-Fi same hai ya nahi dekho.
+npx expo start --tunnel try karo.
+Windows Firewall ka popup aaye to Allow karo.
+Expo Go aur project ka Expo version match hona chahiye. Mismatch ho to Expo Go ko Play Store se update karo.
+Website kaise dekhu?
+
+Alag terminal me cd web, npm install, npm run dev chalao, aur Chrome me http://localhost:5173 kholo. Mobile size dekhne ke liye F12 aur phir Ctrl + Shift + M dabao.

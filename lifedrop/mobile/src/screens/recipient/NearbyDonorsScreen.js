@@ -19,6 +19,7 @@ import { fontFamilies } from '../../theme/typography';
 import { spacing, radii } from '../../theme/spacing';
 import { shadows } from '../../theme/shadows';
 import ScreenHeader from '../../components/ScreenHeader';
+import NotificationBell from '../../components/NotificationBell';
 import Card from '../../components/Card';
 import Loader from '../../components/Loader';
 import EmptyState from '../../components/EmptyState';
@@ -190,6 +191,7 @@ export const NearbyDonorsScreen = ({ navigation }) => {
       <ScreenHeader
         title="Nearby Donors Map"
         subtitle="Explore active, compatible volunteer donors"
+        rightComponent={<NotificationBell />}
       />
 
       {/* Filter Row 1: Blood Group Chips */}

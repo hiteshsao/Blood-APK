@@ -19,6 +19,7 @@ import { shadows } from '../../theme/shadows';
 import Card from '../../components/Card';
 import StatusBadge from '../../components/StatusBadge';
 import ScreenHeader from '../../components/ScreenHeader';
+import NotificationBell from '../../components/NotificationBell';
 import CustomButton from '../../components/CustomButton';
 import EmptyState from '../../components/EmptyState';
 import Loader from '../../components/Loader';
@@ -194,13 +195,16 @@ export const MyRequestsScreen = ({ navigation }) => {
         title="My Blood Requests"
         subtitle="Manage and track your active donation alerts"
         rightComponent={
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => navigation.navigate('CreateRequest', { urgency: 'NORMAL' })}
-            style={styles.headerAddBtn}
-          >
-            <Ionicons name="add" size={20} color={colors.primaryRed} />
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <NotificationBell style={{ marginRight: 8 }} />
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate('CreateRequest', { urgency: 'NORMAL' })}
+              style={styles.headerAddBtn}
+            >
+              <Ionicons name="add" size={20} color={colors.primaryRed} />
+            </TouchableOpacity>
+          </View>
         }
       />
 

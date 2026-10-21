@@ -7,7 +7,9 @@ import DonorHomeScreen from '../screens/donor/DonorHomeScreen';
 import DonorRequestsScreen from '../screens/donor/DonorRequestsScreen';
 import DonorHistoryScreen from '../screens/donor/DonorHistoryScreen';
 import RequestDetailScreen from '../screens/donor/RequestDetailScreen';
+import NotificationScreen from '../screens/common/NotificationScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
+import { useDonorLocationSync } from '../hooks/useLocation';
 import { colors } from '../theme/colors';
 import { fontFamilies } from '../theme/typography';
 import { shadows } from '../theme/shadows';
@@ -51,6 +53,9 @@ const DonorTabs = () => {
 };
 
 export const DonorNavigator = () => {
+  // Sync donor location after login and whenever app comes to foreground, throttled to at most once per 30 minutes
+  useDonorLocationSync();
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -60,13 +65,14 @@ export const DonorNavigator = () => {
     >
       <Stack.Screen name="DonorTabs" component={DonorTabs} />
       <Stack.Screen name="RequestDetail" component={RequestDetailScreen} />
+      <Stack.Screen name="Notifications" component={NotificationScreen} />
     </Stack.Navigator>
   );
 };
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#FFFFFF', // White bottom tab bar as specified
+    backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#F1F5F9',
     height: Platform.OS === 'ios' ? 88 : 64,

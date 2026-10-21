@@ -1,0 +1,122 @@
+All RECIPIENT screens have been built, connected to the backend, and verified end-to-end.
+
+1. Created API Module
+
+
+recipientApi.js
+:
+createRequest(payload): Broadcasts blood request via POST /api/recipient/requests.
+getMyRequests(): Fetches all recipient blood requests via GET /api/recipient/requests.
+getRequestDetails(id): Fetches details via GET /api/recipient/requests/{id} (donor phone revealed only if accepted/completed).
+cancelRequest(id): Cancels pending request via PUT /api/recipient/requests/{id}/cancel.
+completeRequest(id): Marks donation completed via POST /api/recipient/requests/{id}/complete (updates donor's 90-day recovery gap).
+findNearbyDonors({ bloodGroup, lat, lng, radiusKm }): Searches compatible donors with coordinates and distances via GET /api/recipient/donors/nearby.
+2. Built Recipient Screens & Navigation
+
+
+RecipientHomeScreen.js
+:
+
+Greeting: Personal greeting with name, city, and RECIPIENT role badge.
+Large "Request Blood" Primary Card: Prominent call-to-action button navigating to CreateRequest.
+EMERGENCY SOS Button: Distinctive urgent red gradient styling with soft glow, navigating directly to CreateRequest with urgency: 'URGENT', pre-filling 2 units and 25 km emergency broadcast radius.
+Live Map Shortcut: "Find Donors On Live Map" card to quickly open NearbyDonors.
+Latest Request Status Card: Displays patient name, blood group circle badge, units, relative time, and live status badge (PENDING, ACCEPTED, COMPLETED). If accepted, reveals donor name & phone with a quick "Call" shortcut.
+"How It Works" Strip: 3-step timeline (Request → Alert → Connect) reinforcing the zero intermediaries guarantee (no hospitals, no blood banks).
+
+
+CreateRequestScreen.js
+:
+
+Patient Name: Full name input field.
+BloodGroupPicker: Interactive selection grid for all 8 blood groups.
+Units Stepper: [-] and [+] counter stepper (1 to 5 units, with total volume calculation).
+Urgency Toggle: Segmented switch between Normal (10 km) and Urgent SOS (25 km).
+Location Block:
+Permission Reasoning: Shows an alert explaining why location is needed before triggering the OS permission prompt.
+Auto-detect GPS: Uses expo-location with geocoding for city & street address.
+Permission Denied Fallback: User can manually type a city name and tap the map to place or drag the pin.
+Interactive Map Preview: Displays circular radius coverage and draggable <Marker draggable />.
+Required-By Presets: "Immediate (ASAP)", "Today", or "Tomorrow".
+Message: Patient room / note for direct coordination.
+Submit: Calls recipientApi.createRequest() and navigates directly to RequestStatusScreen.
+
+
+NearbyDonorsScreen.js
+:
+
+Interactive Map: Centered on user coordinates with blue pin and translucent red radius Circle (5 km, 10 km, or 25 km).
+Donor Markers: Rendered at each compatible donor's coordinates with blood group badge. Tapping a card highlights and scales up its corresponding marker.
+Search Radius Chips: 5 km, 10 km, 25 km.
+Blood Group Filter: Chip row for all blood groups (A+, A-, B+, B-, AB+, AB-, O+, O-).
+Bottom List of DonorCards: Shows first name, blood group badge, distance ("X.X km away"), and last donation eligibility.
+Privacy Protected: Zero phone numbers or emails displayed here.
+
+
+MyRequestsScreen.js
+:
+
+Filters: Filter tabs for All, Active (PENDING or ACCEPTED), and Completed.
+Request Cards: Blood group badge, patient name, units, city, urgency, and StatusBadge.
+Actions: Direct navigation to RequestStatusScreen, quick Cancel while pending, and quick Call button when accepted.
+
+
+RequestStatusScreen.js
+:
+
+4-Step Timeline:
+Request Broadcasted: Registered on LifeDrop P2P network.
+Donors Notified: Shows exact count of compatible donors alerted nearby.
+Donor Accepted: Active indicator when a donor accepts.
+Donation Completed: Final completed milestone.
+Donors Notified Banner: Shows broadcast radius and urgency tier.
+Cancel Button: Available with confirmation dialog while status is PENDING.
+Accepted Donor Card: Displays donor name, blood group, city, direct phone number, Call (Linking.openURL('tel:...')), WhatsApp (whatsapp://send?phone=...), and "Mark as Completed" button.
+Mark as Completed: Confirmation dialog calling recipientApi.completeRequest(id) to update the donor's 90-day recovery record.
+
+
+RecipientNavigator.js
+:
+
+Configured with Bottom Tabs (Home, Nearby, My Requests, Profile) and Stack routes (CreateRequest, RequestStatus, NearbyDonors).
+3. Google Maps API Key Setup in app.json
+The placeholder is configured in 
+
+app.json
+:
+
+json
+"config": {
+  "googleMaps": {
+    "apiKey": "GOOGLE_MAPS_API_KEY_PLACEHOLDER"
+  }
+}
+How to get a Google Maps API Key:
+Go to the Google Cloud Console.
+Create or select your project.
+Enable Maps SDK for Android (and Maps SDK for iOS if deploying to iOS).
+Navigate to APIs & Services > Credentials and click Create Credentials > API Key.
+Restrict the key to "Maps SDK for Android" and add your Android package name (com.lifedrop.mobile) and SHA-1 fingerprint.
+Replace GOOGLE_MAPS_API_KEY_PLACEHOLDER in lifedrop/mobile/app.json with your generated key. (Note: On iOS simulators or Android Expo Go, standard OpenStreetMap / Apple Maps render automatically even without an API key).
+4. Acceptance Test Results
+An automated integration run against the live Spring Boot backend confirmed the complete recipient workflow:
+
+=== TEST 1: Recipient Login ===
+Recipient Login Status: 200 Rajesh Recipient
+=== TEST 2: Nearby Donors Search (NearbyDonorsScreen) ===
+Nearby A+ donors found within 10 km: 6
+Sample Donor: { firstName: 'Priyanka', bloodGroup: 'O+', distanceKm: 2.5, city: 'Indore', phone: 'HIDDEN (Privacy Safe)' }
+=== TEST 3: Create Blood Request (CreateRequestScreen) ===
+Create Request Status: 201 (Matched Donors: 6)
+=== TEST 4: Get Recipient Requests (MyRequestsScreen) ===
+Recipient Requests Count: 1 | Status: PENDING | Patient: Sunita Sharma
+=== TEST 5: Check Request Details (RequestStatusScreen before accept) ===
+Status before accept: PENDING | Accepted Donor: null
+=== TEST 6: Donor Accepts Request ===
+Donor Accept Status: 200 | Request accepted successfully.
+=== TEST 7: Recipient Tracks Status (RequestStatusScreen after accept) ===
+Status after accept: ACCEPTED
+Donor Contact Revealed: { name: 'Aarav Sharma', phone: '9800000001', bloodGroup: 'A+' }
+=== TEST 8: Recipient Marks Donation Completed (RequestStatusScreen) ===
+Complete Status: 200 | Final Request Status: COMPLETED
+7:40 AM

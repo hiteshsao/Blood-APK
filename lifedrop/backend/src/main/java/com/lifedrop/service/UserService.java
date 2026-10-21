@@ -87,7 +87,7 @@ public class UserService {
     @Transactional
     public UserProfileResponse updatePushToken(Long userId, UpdatePushTokenRequest request) {
         User user = getUserById(userId);
-        user.setPushToken(request.getPushToken() != null ? request.getPushToken().trim() : null);
+        user.setPushToken(request != null && request.getPushToken() != null && !request.getPushToken().isBlank() ? request.getPushToken().trim() : null);
 
         User saved = userRepository.save(user);
         return UserProfileResponse.fromUser(saved);

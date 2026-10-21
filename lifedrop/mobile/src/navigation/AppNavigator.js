@@ -1,6 +1,8 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
+import { NotificationProvider } from '../context/NotificationContext';
+import { navigationRef, consumePendingNavigation } from './navigationRef';
 import SplashScreen from '../screens/common/SplashScreen';
 import AuthNavigator from './AuthNavigator';
 import DonorNavigator from './DonorNavigator';
@@ -14,25 +16,23 @@ export const AppNavigator = () => {
     return <SplashScreen />;
   }
 
-  // 2. No token -> AuthStack (Login, Register)
-  if (!token) {
-    return (
-      <NavigationContainer>
-        <AuthNavigator />
-      </NavigationContainer>
-    );
-  }
-
-  // 3. Authenticated -> Role based navigation
-  // DONOR -> DonorTabs; RECIPIENT -> RecipientTabs
   return (
-    <NavigationContainer>
-      {role === 'DONOR' ? (
-        <DonorNavigator />
-      ) : (
-        <RecipientNavigator />
-      )}
-    </NavigationContainer>
+    <NotificationProvider>
+      <NavigationContainer
+        ref={navigationRef}
+        onReady={() => {
+          consumePendingNavigation();
+        }}
+      >
+        {!token ? (
+          <AuthNavigator />
+        ) : role === 'DONOR' ? (
+          <DonorNavigator />
+        ) : (
+          <RecipientNavigator />
+        )}
+      </NavigationContainer>
+    </NotificationProvider>
   );
 };
 

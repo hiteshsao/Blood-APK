@@ -20,6 +20,7 @@ import Card from '../../components/Card';
 import StatusBadge from '../../components/StatusBadge';
 import CustomButton from '../../components/CustomButton';
 import Loader from '../../components/Loader';
+import NotificationBell from '../../components/NotificationBell';
 import { formatTimeAgo } from '../../utils/formatters';
 
 export const RecipientHomeScreen = ({ navigation }) => {
@@ -77,8 +78,11 @@ export const RecipientHomeScreen = ({ navigation }) => {
             <Text style={styles.userCityText}>📍 {user?.city || 'Indore, MP'}</Text>
           </View>
 
-          <View style={styles.roleBadgeBox}>
-            <Text style={styles.roleBadgeText}>RECIPIENT</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <NotificationBell style={{ marginRight: 10 }} />
+            <View style={styles.roleBadgeBox}>
+              <Text style={styles.roleBadgeText}>RECIPIENT</Text>
+            </View>
           </View>
         </View>
 

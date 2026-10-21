@@ -21,6 +21,7 @@ import Card from '../../components/Card';
 import StatusBadge from '../../components/StatusBadge';
 import CustomButton from '../../components/CustomButton';
 import Loader from '../../components/Loader';
+import NotificationBell from '../../components/NotificationBell';
 import { formatTimeAgo, formatDistance } from '../../utils/formatters';
 
 export const DonorHomeScreen = ({ navigation }) => {
@@ -120,8 +121,11 @@ export const DonorHomeScreen = ({ navigation }) => {
             <Text style={styles.userNameText}>{user?.name || 'Life Saver'} 👋</Text>
             <Text style={styles.citySubtitle}>📍 {user?.city || 'Bhopal, MP'}</Text>
           </View>
-          <View style={styles.bloodBadgeBox}>
-            <Text style={styles.bloodBadgeText}>{user?.bloodGroup || 'A+'}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <NotificationBell style={{ marginRight: 10 }} />
+            <View style={styles.bloodBadgeBox}>
+              <Text style={styles.bloodBadgeText}>{user?.bloodGroup || 'A+'}</Text>
+            </View>
           </View>
         </View>
 
