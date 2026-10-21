@@ -4,6 +4,8 @@ import com.lifedrop.dto.ApiResponse;
 import com.lifedrop.dto.BloodRequestRecipientResponseDto;
 import com.lifedrop.dto.CreateBloodRequestDto;
 import com.lifedrop.dto.DonorResponseDto;
+import com.lifedrop.dto.SosRequestDto;
+import com.lifedrop.dto.SosResponseDto;
 import com.lifedrop.enums.BloodGroup;
 import com.lifedrop.security.UserPrincipal;
 import com.lifedrop.service.BloodRequestService;
@@ -56,6 +58,32 @@ public class RecipientController {
                 String.format("Blood request created successfully. %d nearby compatible donors notified.",
                         response.getMatchedDonorCount() != null ? response.getMatchedDonorCount() : 0),
                 response
+        ));
+    }
+
+    @PostMapping("/sos")
+    @Operation(summary = "Broadcast an emergency SOS blood alert: 25km auto-retry to 50km, urgent push notification")
+    public ResponseEntity<ApiResponse<SosResponseDto>> createSos(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @Valid @RequestBody SosRequestDto dto
+    ) {
+        SosResponseDto response = bloodRequestService.createSosRequest(principal.getId(), dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(
+                String.format("Emergency SOS created successfully. %d nearby compatible donors notified.",
+                        response.getDonorsNotified()),
+                response
+        ));
+    }
+
+    @GetMapping("/sos/active")
+    @Operation(summary = "Get currently active SOS blood request for logged-in recipient, if any")
+    public ResponseEntity<ApiResponse<BloodRequestRecipientResponseDto>> getActiveSos(
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        BloodRequestRecipientResponseDto active = bloodRequestService.getActiveSosRequest(principal.getId());
+        return ResponseEntity.ok(ApiResponse.success(
+                active != null ? "Active SOS request found" : "No active SOS request in progress",
+                active
         ));
     }
 

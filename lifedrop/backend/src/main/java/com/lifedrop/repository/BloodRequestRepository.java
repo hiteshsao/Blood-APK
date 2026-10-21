@@ -21,6 +21,11 @@ public interface BloodRequestRepository extends JpaRepository<BloodRequest, Long
 
     List<BloodRequest> findByRecipientIdOrderByCreatedAtDesc(Long recipientId);
 
+    List<BloodRequest> findByRecipientIdAndUrgencyAndStatusIn(Long recipientId, com.lifedrop.enums.Urgency urgency, Collection<RequestStatus> statuses);
+
+    java.util.Optional<BloodRequest> findFirstByRecipientIdAndUrgencyAndStatusInOrderByCreatedAtDesc(
+            Long recipientId, com.lifedrop.enums.Urgency urgency, Collection<RequestStatus> statuses);
+
     long countByRecipientIdAndCreatedAtAfter(Long recipientId, java.time.LocalDateTime after);
 
     List<BloodRequest> findByStatus(RequestStatus status);

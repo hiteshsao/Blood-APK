@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { SosProvider } from './context/SosContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import TopAlertBar from './components/TopAlertBar';
 import Navbar from './components/Navbar';
@@ -25,9 +26,10 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
-          <div className="flex flex-col min-h-screen bg-white text-slate-900 antialiased">
-            <TopAlertBar />
-            <Navbar />
+          <SosProvider>
+            <div className="flex flex-col min-h-screen bg-white text-slate-900 antialiased">
+              <TopAlertBar />
+              <Navbar />
             <main className="flex-1">
               <Routes>
                 {/* Public Routes */}
@@ -85,8 +87,9 @@ export default function App() {
             </main>
             <Footer />
           </div>
-        </ToastProvider>
-      </AuthProvider>
+        </SosProvider>
+      </ToastProvider>
+    </AuthProvider>
     </BrowserRouter>
   );
 }

@@ -16,16 +16,20 @@ import { colors } from '../../theme/colors';
 import { fontFamilies } from '../../theme/typography';
 import { spacing, radii } from '../../theme/spacing';
 import { shadows } from '../../theme/shadows';
+import { LinearGradient } from 'expo-linear-gradient';
 import Card from '../../components/Card';
 import StatusBadge from '../../components/StatusBadge';
 import CustomButton from '../../components/CustomButton';
 import Loader from '../../components/Loader';
 import NotificationBell from '../../components/NotificationBell';
+import SosBottomSheet from '../../components/SosBottomSheet';
 import { formatTimeAgo } from '../../utils/formatters';
 
 export const RecipientHomeScreen = ({ navigation }) => {
   const { user, refreshUser } = useAuth();
   const [requests, setRequests] = useState([]);
+  const [activeSos, setActiveSos] = useState(null);
+  const [sosSheetVisible, setSosSheetVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
@@ -35,6 +39,13 @@ export const RecipientHomeScreen = ({ navigation }) => {
       setError(null);
       const data = await recipientApi.getMyRequests();
       setRequests(data);
+
+      try {
+        const active = await recipientApi.getActiveSos();
+        setActiveSos(active);
+      } catch {
+        // ignore
+      }
     } catch (err) {
       console.log('[RecipientHome Error]', err?.response?.data || err?.message);
       setError(err?.response?.data?.message || 'Failed to load requests.');
@@ -116,22 +127,55 @@ export const RecipientHomeScreen = ({ navigation }) => {
           />
         </Card>
 
-        {/* 2. EMERGENCY SOS Button */}
-        <View style={styles.sosSection}>
-          <CustomButton
-            title="EMERGENCY SOS REQUEST"
+        {/* Active SOS In-Progress Banner (if any) */}
+        {activeSos && (
+          <TouchableOpacity
+            activeOpacity={0.88}
             onPress={() =>
-              navigation.navigate('CreateRequest', {
-                urgency: 'URGENT',
-                prefillUnits: 2,
+              navigation.navigate('SosStatus', {
+                requestId: activeSos.id,
+                donorsNotified: activeSos.matchedDonorCount,
+                radiusKm: activeSos.radiusKm,
               })
             }
-            variant="sos"
-            style={styles.sosButton}
-          />
-          <Text style={styles.sosCaption}>
-            ⚡ Immediately alerts all matching donors within 25 km with highest priority
-          </Text>
+            style={styles.activeSosBanner}
+          >
+            <View style={styles.activeSosPulseDot} />
+            <View style={{ flex: 1, marginLeft: 8 }}>
+              <Text style={styles.activeSosTitle}>🚨 ACTIVE SOS BROADCAST IN PROGRESS</Text>
+              <Text style={styles.activeSosSubtitle}>
+                Request #{activeSos.id} • {activeSos.matchedDonorCount || 0} donors notified ({activeSos.status}) • Tap for Live Status
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color="#991B1B" />
+          </TouchableOpacity>
+        )}
+
+        {/* 2. EMERGENCY SOS Button (Red gradient, glow, alert icon) */}
+        <View style={styles.sosSection}>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => setSosSheetVisible(true)}
+            style={styles.sosGlowWrapper}
+          >
+            <LinearGradient
+              colors={['#EF4444', '#DC2626', '#991B1B']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.sosGradientButton}
+            >
+              <View style={styles.sosIconCircle}>
+                <Ionicons name="warning" size={24} color="#DC2626" />
+              </View>
+              <View style={styles.sosTextContainer}>
+                <Text style={styles.sosButtonMainText}>EMERGENCY SOS BROADCAST</Text>
+                <Text style={styles.sosButtonSubText}>
+                  Instant 25 km high-priority donor alert • Tap to configure
+                </Text>
+              </View>
+              <Ionicons name="flash" size={20} color="#FEF08A" />
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
 
         {/* Explore Nearby Donors Quick Banner */}
@@ -296,6 +340,21 @@ export const RecipientHomeScreen = ({ navigation }) => {
           </View>
         </Card>
       </ScrollView>
+
+      {/* SOS Bottom Sheet Confirmation */}
+      <SosBottomSheet
+        visible={sosSheetVisible}
+        onClose={() => setSosSheetVisible(false)}
+        user={user}
+        onSosDispatched={(sosResult) => {
+          fetchRecipientData();
+          navigation.navigate('SosStatus', {
+            requestId: sosResult.requestId,
+            donorsNotified: sosResult.donorsNotified,
+            radiusKm: sosResult.radiusKm,
+          });
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -396,8 +455,78 @@ const styles = StyleSheet.create({
   requestButton: {
     marginTop: 2,
   },
+  activeSosBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1.5,
+    borderColor: '#EF4444',
+    padding: spacing.md,
+    borderRadius: radii.md,
+    marginBottom: spacing.md,
+    ...shadows.redGlow,
+  },
+  activeSosPulseDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#DC2626',
+  },
+  activeSosTitle: {
+    fontFamily: fontFamilies.extraBold,
+    fontSize: 12,
+    color: '#991B1B',
+    letterSpacing: 0.5,
+  },
+  activeSosSubtitle: {
+    fontFamily: fontFamilies.medium,
+    fontSize: 11,
+    color: '#B91C1C',
+    marginTop: 2,
+  },
   sosSection: {
     marginBottom: spacing.md,
+  },
+  sosGlowWrapper: {
+    borderRadius: radii.card,
+    overflow: 'hidden',
+    ...shadows.sosGlow,
+  },
+  sosGradientButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: radii.card,
+  },
+  sosIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  sosTextContainer: {
+    flex: 1,
+    marginLeft: spacing.md,
+  },
+  sosButtonMainText: {
+    fontFamily: fontFamilies.extraBold,
+    fontSize: 15,
+    color: '#FFFFFF',
+    letterSpacing: 0.4,
+  },
+  sosButtonSubText: {
+    fontFamily: fontFamilies.medium,
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginTop: 2,
   },
   sosButton: {
     ...shadows.sosGlow,

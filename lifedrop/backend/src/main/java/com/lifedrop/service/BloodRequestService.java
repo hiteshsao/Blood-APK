@@ -6,6 +6,8 @@ import com.lifedrop.dto.CreateBloodRequestDto;
 import com.lifedrop.dto.DonorIncomingRequestDto;
 import com.lifedrop.dto.DonorRequestDetailsDto;
 import com.lifedrop.dto.DonorResponseDto;
+import com.lifedrop.dto.SosRequestDto;
+import com.lifedrop.dto.SosResponseDto;
 import com.lifedrop.entity.BloodRequest;
 import com.lifedrop.entity.RequestResponse;
 import com.lifedrop.entity.User;
@@ -140,6 +142,126 @@ public class BloodRequestService {
 
         return BloodRequestRecipientResponseDto.fromEntity(request, matchedCount);
     }
+
+    /**
+     * Broadcasts an emergency SOS blood alert:
+     * - Limit: one active SOS per recipient at a time.
+     * - Urgency: URGENT, radius: 25 km, requiredBy: now + 6 hours.
+     * - If no donors found within 25 km, automatically retries once with 50 km.
+     * - Dispatches high-priority push notification on the "urgent" channel to all matched donors.
+     * - Returns { requestId, donorsNotified, radiusKm, message }.
+     */
+    @Transactional
+    public SosResponseDto createSosRequest(Long recipientId, SosRequestDto dto) {
+        User recipient = userRepository.findById(recipientId)
+                .orElseThrow(() -> new NotFoundException("Recipient not found"));
+
+        // Limit: one active SOS per recipient at a time
+        List<BloodRequest> activeSosList = bloodRequestRepository.findByRecipientIdAndUrgencyAndStatusIn(
+                recipientId,
+                Urgency.URGENT,
+                List.of(RequestStatus.PENDING, RequestStatus.ACCEPTED)
+        );
+        if (!activeSosList.isEmpty()) {
+            BloodRequest active = activeSosList.get(0);
+            throw new BadRequestException(String.format(
+                    "You already have an active SOS request in progress (#%d, %s). Please complete or cancel it before dispatching a new SOS.",
+                    active.getId(), active.getStatus()
+            ));
+        }
+
+        String city = (dto.getCity() != null && !dto.getCity().trim().isEmpty())
+                ? dto.getCity().trim()
+                : (recipient.getCity() != null ? recipient.getCity() : "Nearby Area");
+
+        BloodRequest request = BloodRequest.builder()
+                .recipient(recipient)
+                .patientName(dto.getPatientName().trim())
+                .bloodGroup(dto.getBloodGroup())
+                .unitsNeeded(1)
+                .urgency(Urgency.URGENT)
+                .city(city)
+                .latitude(dto.getLatitude())
+                .longitude(dto.getLongitude())
+                .radiusKm(25.0)
+                .message(dto.getMessage() != null && !dto.getMessage().trim().isEmpty()
+                        ? dto.getMessage().trim()
+                        : "🚨 EMERGENCY SOS: Urgent blood required immediately.")
+                .requiredBy(LocalDateTime.now().plusHours(6))
+                .status(RequestStatus.PENDING)
+                .build();
+
+        // 1. Initial donor search within 25 km
+        List<DonorResponseDto> matched = matchingService.findCompatibleDonors(
+                dto.getBloodGroup(),
+                dto.getLatitude(),
+                dto.getLongitude(),
+                25.0
+        );
+
+        // 2. If no donor is found in 25 km, automatically retry once with 50 km
+        if (matched.isEmpty()) {
+            log.info("No compatible donors found within 25 km for SOS. Automatically retrying once with 50 km radius...");
+            matched = matchingService.findCompatibleDonors(
+                    dto.getBloodGroup(),
+                    dto.getLatitude(),
+                    dto.getLongitude(),
+                    50.0
+            );
+            if (!matched.isEmpty()) {
+                request.setRadiusKm(50.0);
+            }
+        }
+
+        request = bloodRequestRepository.save(request);
+
+        int matchedCount = 0;
+        if (!matched.isEmpty()) {
+            List<Long> donorIds = matched.stream().map(DonorResponseDto::getId).toList();
+            List<User> donorUsers = userRepository.findAllById(donorIds);
+
+            for (User donorUser : donorUsers) {
+                RequestResponse response = RequestResponse.builder()
+                        .request(request)
+                        .donor(donorUser)
+                        .status(ResponseStatus.PENDING)
+                        .build();
+                requestResponseRepository.save(response);
+            }
+
+            matchedCount = donorUsers.size();
+            // Dispatches high-priority push notification on "urgent" channel
+            notificationService.notifyDonorsOfNewRequest(request, donorUsers);
+        }
+
+        log.info("🚨 [EMERGENCY SOS] Created BloodRequest #{} for recipient ID: {} with {} matched donors within {} km",
+                request.getId(), recipientId, matchedCount, request.getRadiusKm());
+
+        return SosResponseDto.builder()
+                .requestId(request.getId())
+                .donorsNotified(matchedCount)
+                .radiusKm(request.getRadiusKm())
+                .status(request.getStatus().name())
+                .message(String.format("Emergency SOS broadcasted successfully. %d nearby compatible donors alerted within %.0f km.",
+                        matchedCount, request.getRadiusKm()))
+                .build();
+    }
+
+    /**
+     * Retrieves the currently active SOS request for a recipient, if any.
+     */
+    @Transactional(readOnly = true)
+    public BloodRequestRecipientResponseDto getActiveSosRequest(Long recipientId) {
+        return bloodRequestRepository.findFirstByRecipientIdAndUrgencyAndStatusInOrderByCreatedAtDesc(
+                recipientId,
+                Urgency.URGENT,
+                List.of(RequestStatus.PENDING, RequestStatus.ACCEPTED)
+        ).map(r -> {
+            int count = (int) requestResponseRepository.countByRequestId(r.getId());
+            return BloodRequestRecipientResponseDto.fromEntity(r, count);
+        }).orElse(null);
+    }
+
 
     /**
      * Returns all blood requests created by the recipient, ordered newest first.

@@ -8,6 +8,7 @@ import CreateRequestScreen from '../screens/recipient/CreateRequestScreen';
 import NearbyDonorsScreen from '../screens/recipient/NearbyDonorsScreen';
 import MyRequestsScreen from '../screens/recipient/MyRequestsScreen';
 import RequestStatusScreen from '../screens/recipient/RequestStatusScreen';
+import SosStatusScreen from '../screens/recipient/SosStatusScreen';
 import NotificationScreen from '../screens/common/NotificationScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 import { colors } from '../theme/colors';
@@ -63,6 +64,7 @@ export const RecipientNavigator = () => {
       <Stack.Screen name="RecipientTabs" component={RecipientTabs} />
       <Stack.Screen name="CreateRequest" component={CreateRequestScreen} />
       <Stack.Screen name="RequestStatus" component={RequestStatusScreen} />
+      <Stack.Screen name="SosStatus" component={SosStatusScreen} />
       <Stack.Screen name="NearbyDonors" component={NearbyDonorsScreen} />
       <Stack.Screen name="Notifications" component={NotificationScreen} />
     </Stack.Navigator>

@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Search, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { useSos } from '../context/SosContext';
 
 export default function CtaBand() {
+  const { openSos } = useSos();
   return (
     <section className="bg-gradient-to-r from-[#991B1B] via-[#C62828] to-[#DC2626] text-white py-16 sm:py-20 relative overflow-hidden">
       {/* Subtle background circles for depth */}
@@ -41,13 +43,14 @@ export default function CtaBand() {
             <span>Find Donors Near Me</span>
           </Link>
 
-          <Link
-            to="/emergency-sos"
-            className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-slate-950 text-base font-black px-8 py-4 rounded-xl shadow-sos transition-all duration-200 flex items-center justify-center gap-2"
+          <button
+            type="button"
+            onClick={openSos}
+            className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-slate-950 text-base font-black px-8 py-4 rounded-xl shadow-sos transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider"
           >
             <AlertTriangle className="w-5 h-5 text-red-700" />
             <span>EMERGENCY SOS</span>
-          </Link>
+          </button>
         </div>
 
         <p className="mt-8 text-xs text-red-200">

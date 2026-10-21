@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Heart, AlertTriangle, Droplet } from 'lucide-react';
+import { useSos } from '../context/SosContext';
 import StatsStrip from '../components/StatsStrip';
 import HowItWorks from '../components/HowItWorks';
 import BloodCompatibilityChart from '../components/BloodCompatibilityChart';
@@ -8,6 +9,7 @@ import WhyLifeDrop from '../components/WhyLifeDrop';
 import CtaBand from '../components/CtaBand';
 
 export default function Home() {
+  const { openSos } = useSos();
   return (
     <div className="min-h-screen flex flex-col">
       
@@ -60,13 +62,14 @@ export default function Home() {
             </Link>
 
             {/* SOS Style: EMERGENCY SOS */}
-            <Link
-              to="/emergency-sos"
-              className="bg-gradient-to-r from-[#DC2626] to-[#991B1B] hover:from-[#EF4444] hover:to-[#B91C1C] text-white text-sm sm:text-base font-black px-6 py-3.5 rounded-xl shadow-sos hover:shadow-sos-hover transition-all duration-300 flex items-center justify-center gap-2 uppercase tracking-wide transform hover:-translate-y-0.5 active:translate-y-0"
+            <button
+              type="button"
+              onClick={openSos}
+              className="bg-gradient-to-r from-[#DC2626] to-[#991B1B] hover:from-[#EF4444] hover:to-[#B91C1C] text-white text-sm sm:text-base font-black px-6 py-3.5 rounded-xl shadow-sos hover:shadow-sos-hover transition-all duration-300 flex items-center justify-center gap-2 uppercase tracking-wide transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
             >
               <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-200 animate-bounce" />
               <span>EMERGENCY SOS</span>
-            </Link>
+            </button>
 
           </div>
 

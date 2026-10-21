@@ -17,6 +17,7 @@ import {
 import axiosInstance from '../api/axiosInstance';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useSos } from '../context/SosContext';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,6 +31,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const { openSos } = useSos();
 
   // Navigation Links
   const navLinks = [
@@ -182,14 +184,15 @@ export default function Navbar() {
           {/* Right Action Buttons */}
           <div className="hidden lg:flex items-center gap-3">
             
-            {/* Quick Request Button */}
-            <Link
-              to={user?.role === 'RECIPIENT' ? '/recipient/dashboard#request-form-section' : '/emergency-sos'}
+            {/* Emergency SOS Button */}
+            <button
+              type="button"
+              onClick={openSos}
               className="bg-gradient-to-r from-[#DC2626] to-[#991B1B] hover:from-[#EF4444] hover:to-[#B91C1C] text-white text-xs font-black px-4 py-2.5 rounded-full shadow-sos hover:shadow-sos-hover transition-all duration-300 flex items-center gap-2 tracking-wider uppercase transform hover:-translate-y-0.5 active:translate-y-0"
             >
               <AlertTriangle className="w-4 h-4 animate-bounce text-amber-200" />
-              <span>REQUEST BLOOD</span>
-            </Link>
+              <span>EMERGENCY SOS</span>
+            </button>
 
             <div className="w-px h-6 bg-slate-200 mx-1"></div>
 
@@ -373,6 +376,20 @@ export default function Navbar() {
                 </Link>
               );
             })}
+          </div>
+
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openSos();
+              }}
+              className="w-full bg-gradient-to-r from-[#DC2626] to-[#991B1B] text-white text-xs font-black py-3 px-4 rounded-xl shadow-sos flex items-center justify-center gap-2 uppercase tracking-wider"
+            >
+              <AlertTriangle className="w-4 h-4 text-amber-200 animate-bounce" />
+              <span>EMERGENCY SOS BROADCAST</span>
+            </button>
           </div>
 
           <div className="pt-3 border-t border-slate-100 flex flex-col gap-2.5">

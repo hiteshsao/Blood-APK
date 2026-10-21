@@ -27,6 +27,25 @@ export const recipientApi = {
   },
 
   /**
+   * Broadcast an emergency SOS blood alert (25km auto-retry to 50km, high priority push)
+   * @param {{ patientName: string, bloodGroup: string, city?: string, latitude: number, longitude: number, message?: string }} payload
+   * @returns {Promise<{ requestId: number, donorsNotified: number, radiusKm: number, message: string }>}
+   */
+  async sendSos(payload) {
+    const response = await axiosInstance.post('/api/recipient/sos', payload);
+    return response.data?.data;
+  },
+
+  /**
+   * Get currently active SOS request for logged-in recipient, if any
+   * @returns {Promise<object|null>}
+   */
+  async getActiveSos() {
+    const response = await axiosInstance.get('/api/recipient/sos/active');
+    return response.data?.data;
+  },
+
+  /**
    * Get all blood requests created by logged-in recipient (newest first)
    * @returns {Promise<Array>} List of BloodRequestRecipientResponseDto
    */
