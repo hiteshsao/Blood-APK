@@ -1,0 +1,154 @@
+LifeDrop Release Preparation & Deployment Guide
+The LifeDrop project is fully prepared for production release across the backend containerization, cloud deployment, mobile APK build, and Google Play Store compliance.
+
+1. Backend Deployment
+A. Created Multi-Stage Dockerfile (Java 17)
+The backend container is configured with a two-stage build in 
+
+Dockerfile
+:
+
+Stage 1 (Build): maven:3.9.6-eclipse-temurin-17-alpine downloads dependencies and compiles a production .jar with -DskipTests.
+Stage 2 (Runtime): eclipse-temurin:17-jre-alpine runs the container under a non-root lifedrop user with container memory limits (-XX:MaxRAMPercentage=75.0) and dynamic $PORT binding.
+Associated 
+
+.dockerignore
+ excludes target/, .git/, .idea/, .env, and local log files.
+B. Production Configuration: application-prod.properties
+Created 
+
+application-prod.properties
+ to read all runtime parameters from environment variables:
+
+Environment Variable	Description	Production Example
+SPRING_PROFILES_ACTIVE	Spring Boot active profile	prod
+PORT	Dynamic web port assigned by host	8080 (or host assigned)
+DB_URL	PostgreSQL JDBC connection string	jdbc:postgresql://ep-xyz.us-east-2.aws.neon.tech/lifedrop?sslmode=require
+DB_USER	PostgreSQL username	lifedrop_user
+DB_PASS	PostgreSQL password	StrongSecretPass123!
+JWT_SECRET	256-bit HMAC-SHA signing secret (64+ hex/base64 chars)	d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5
+JWT_EXPIRATION	Token expiry in milliseconds	86400000 (24 hours)
+CORS_ALLOWED_ORIGINS	Allowed production web domain(s)	https://lifedrop.vercel.app,https://lifedrop.app
+EXPO_PUSH_URL	Expo push notification relay endpoint	https://exp.host/--/api/v2/push/send
+DONATION_GAP_DAYS	Clinical gap between donations	90
+C. CORS Restricted in Production
+
+
+CorsConfig.java
+ reads ${app.cors.allowed-origins}. When running under the prod profile, CORS rejects arbitrary localhost ports and allows only the configured domain(s) defined in CORS_ALLOWED_ORIGINS.
+
+2. Step-by-Step Cloud Deployment
+Step 1: Deploy Database on Neon (Free Tier)
+Navigate to neon.tech and create a free PostgreSQL project (e.g. lifedrop-db).
+Select your closest AWS region and copy the connection string.
+Construct the JDBC URL:
+text
+jdbc:postgresql://<neon-host>/lifedrop?sslmode=require
+Note your database user (DB_USER), password (DB_PASS), and URL (DB_URL).
+Step 2: Deploy Backend on Render (Free Tier)
+Push your repository to GitHub.
+Sign in to render.com and click New + → Web Service.
+Connect your repository.
+Set the following service settings:
+Name: lifedrop-backend
+Root Directory: lifedrop/backend
+Environment: Docker
+Dockerfile Path: Dockerfile
+Instance Type: Free
+Under Environment Variables, add:
+SPRING_PROFILES_ACTIVE: prod
+DB_URL: jdbc:postgresql://<neon-host>/<db-name>?sslmode=require
+DB_USER: <neon-username>
+DB_PASS: <neon-password>
+JWT_SECRET: <64-character-random-hex-string>
+JWT_EXPIRATION: 86400000
+CORS_ALLOWED_ORIGINS: https://lifedrop.vercel.app (or your real web domain)
+Click Create Web Service. Render builds the multi-stage Docker container and provides your HTTPS URL (e.g. https://lifedrop-backend.onrender.com).
+3. Mobile APK & EAS Build Configuration
+A. Updated 
+
+app.json
+App Name: "LifeDrop"
+Slug: "lifedrop"
+Version: "1.0.0"
+Android Package: "com.lifedrop.app"
+App Icon & Adaptive Icon: Red drop on white background (#FFFFFF) with foreground asset 
+
+./assets/android-icon-foreground.png
+.
+Splash Screen: Pink background (#FFF5F5) with logo asset 
+
+./assets/splash-icon.png
+ in contain resize mode.
+Android Permissions:
+ACCESS_FINE_LOCATION
+ACCESS_COARSE_LOCATION
+POST_NOTIFICATIONS
+B. Created 
+
+eas.json
+Configured 3 distinct profiles with EXPO_PUBLIC_API_URL injected:
+
+development: Builds a development client for local debugging.
+preview: Compiles a standalone .apk directly installable on physical Android devices.
+production: Compiles an optimized .aab (Android App Bundle) signed for Google Play Store upload.
+C. Commands to Build & Install the APK
+From the lifedrop/mobile directory:
+
+Install EAS CLI and Log In:
+bash
+npm install -g eas-cli
+eas login
+Configure Project for EAS:
+bash
+eas build:configure
+Build the Standalone Android APK:
+bash
+eas build -p android --profile preview
+Installing the APK on a Real Android Phone:
+Once EAS Build finishes, it provides a download link and a QR code in the terminal.
+Scan the QR code with your phone camera or open the download link in Chrome on your phone.
+Download lifedrop.apk.
+Tap the downloaded file → select Install. If prompted with "Install unknown apps", tap Settings and toggle Allow from this source.
+Launch LifeDrop.
+4. Google Play Store Readiness
+A. Web Privacy Policy (/privacy)
+Updated 
+
+PrivacyPolicy.jsx
+ on public route /privacy covering all Google Play Developer Policy items:
+
+What data is collected: Full name, 10-digit phone number, blood group & donation interval, real-time GPS coordinates, and push notification tokens.
+Why it is collected: Emergency SOS matching, distance calculation via Haversine formula, clinical safety gap enforcement (90 days), and urgent push alerts.
+Who can see it: Donor phone numbers are masked by default and never displayed on public feeds. Contact details are revealed strictly after a donor accepts a request. No third-party brokers or advertisers.
+Data deletion on request: Both in-app self-service deletion and formal email deletion.
+Contact email: privacy@lifedrop.app.
+B. In-App "Delete My Account" Option
+Backend API: DELETE /api/users/me implemented in 
+
+UserController.java
+ and 
+
+UserService.java
+.
+Anonymizes name → "Deleted User"
+Anonymizes email → "deleted_<id>_<uuid>@anonymized.local"
+Anonymizes phone → "0000000000"
+Clears latitude, longitude, and pushToken to null
+Sets active = false and available = false
+Scrambles password hash to block future logins
+Mobile App: Added destructive "Delete My Account" button with confirmation modal in 
+
+ProfileScreen.js
+ via 
+
+userApi.js
+.
+Web App: Added "Delete My Account" card and confirmation modal in 
+
+Profile.jsx
+.
+Automated Verification: Integrated test testDeleteAccountAnonymizesData passing in 
+
+UserProfileAndDonorControllerIntegrationTest.java
+.
