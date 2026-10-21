@@ -1,10 +1,7 @@
 target/
-.git/
+.git
 .gitignore
+*.log
+.vscode/
 .idea/
-*.iml
 .mvn/
-mvnw
-mvnw.cmd
-Dockerfile
-README.md

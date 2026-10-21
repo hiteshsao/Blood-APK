@@ -1,0 +1,7 @@
+lifedrop/web/
+lifedrop/mobile/
+lifedrop/backend/target/
+files/
+.git
+.vscode
+*.md

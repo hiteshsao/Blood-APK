@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Cache dependencies
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
+RUN mvn dependency:resolve -B
 
 # Copy source code and build production jar
 COPY src ./src
@@ -24,8 +24,8 @@ WORKDIR /app
 RUN addgroup -S lifedrop && adduser -S lifedrop -G lifedrop
 USER lifedrop
 
-# Copy executable jar from builder stage
-COPY --from=builder /app/target/*.jar app.jar
+# Copy executable jar from builder stage (built with finalName 'app')
+COPY --from=builder /app/target/app.jar app.jar
 
 # Render & Railway supply dynamic $PORT
 ENV PORT=8080
