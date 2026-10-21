@@ -15,6 +15,32 @@ export const authApi = {
   },
 
   /**
+   * Request email login OTP code
+   * @param {string} email
+   * @returns {Promise<{ success: boolean, message: string }>}
+   */
+  async sendOtp(email) {
+    const response = await axiosInstance.post('/api/auth/otp/send', {
+      email: email.trim().toLowerCase(),
+    });
+    return response.data;
+  },
+
+  /**
+   * Verify email login OTP code
+   * @param {string} email
+   * @param {string} otp
+   * @returns {Promise<{ token: string, user: object }>}
+   */
+  async verifyOtp(email, otp) {
+    const response = await axiosInstance.post('/api/auth/otp/verify', {
+      email: email.trim().toLowerCase(),
+      otp: otp.trim(),
+    });
+    return response.data?.data;
+  },
+
+  /**
    * Register a new DONOR or RECIPIENT
    * @param {object} payload
    * @returns {Promise<{ token: string, user: object }>}

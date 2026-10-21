@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -20,49 +20,150 @@ import { shadows } from '../../theme/shadows';
 import CustomButton from '../../components/CustomButton';
 import InputField from '../../components/InputField';
 import Card from '../../components/Card';
+import OtpInput from '../../components/OtpInput';
 
 export const LoginScreen = ({ navigation }) => {
-  const { login } = useAuth();
+  const { login, sendOtp, verifyOtp } = useAuth();
+
+  // Mode: "password" | "otp"
+  const [activeTab, setActiveTab] = useState('password');
+
+  // Password Login State
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState(null);
 
-  const handleLogin = async () => {
+  // Email OTP Login State
+  const [otpEmail, setOtpEmail] = useState('');
+  const [otpStep, setOtpStep] = useState(1); // 1: email, 2: 6-digit code
+  const [otpCode, setOtpCode] = useState('');
+  const [otpSending, setOtpSending] = useState(false);
+  const [otpVerifying, setOtpVerifying] = useState(false);
+  const [otpError, setOtpError] = useState(null);
+  const [countdown, setCountdown] = useState(0);
+
+  const timerRef = useRef(null);
+
+  // 60-second Resend countdown timer
+  useEffect(() => {
+    if (countdown > 0) {
+      timerRef.current = setTimeout(() => {
+        setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+    }
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [countdown]);
+
+  // Clean timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
+  const formatErrorMessage = (err, defaultMsg) => {
+    if (!err?.response) {
+      return 'Unable to connect to LifeDrop server. Please check your internet connection.';
+    }
+    if (err.response.status === 429) {
+      return 'Please wait before requesting another code.';
+    }
+    return err.response.data?.message || err.response.data?.error || defaultMsg;
+  };
+
+  // Password Submit
+  const handlePasswordLogin = async () => {
     if (!email.trim() || !password) {
-      setError('Please enter your email and password.');
+      setPasswordError('Please enter your email and password.');
       return;
     }
 
     try {
-      setLoading(true);
-      setError(null);
+      setPasswordLoading(true);
+      setPasswordError(null);
       await login({
         email: email.trim().toLowerCase(),
         password,
       });
-      // AuthContext token change will trigger navigation automatically
+      // AuthContext token change triggers automatic navigation
     } catch (err) {
-      console.log('[Login Error]', err?.response?.data || err?.message);
-      const msg =
-        err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        'Login failed. Please check your credentials or backend connection.';
-      setError(msg);
+      setPasswordError(formatErrorMessage(err, 'Invalid email or password.'));
     } finally {
-      setLoading(false);
+      setPasswordLoading(false);
     }
   };
 
-  const fillDemoAccount = (role) => {
-    if (role === 'DONOR') {
-      setEmail('donor1@lifedrop.test');
-      setPassword('Password@123');
-    } else {
-      setEmail('recipient1@lifedrop.test');
-      setPassword('Password@123');
+  // OTP Step 1: Send Code
+  const handleSendOtp = async () => {
+    const cleanEmail = otpEmail.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+      setOtpError('Please enter a valid email address.');
+      return;
     }
-    setError(null);
+
+    try {
+      setOtpSending(true);
+      setOtpError(null);
+      await sendOtp(cleanEmail);
+      setOtpStep(2);
+      setCountdown(60);
+      setOtpCode('');
+    } catch (err) {
+      setOtpError(formatErrorMessage(err, 'Failed to send login code. Please try again.'));
+    } finally {
+      setOtpSending(false);
+    }
+  };
+
+  // OTP Step 2: Resend Code
+  const handleResendOtp = async () => {
+    if (countdown > 0 || otpSending) return;
+    await handleSendOtp();
+  };
+
+  // OTP Step 2: Verify Code
+  const handleVerifyOtp = async () => {
+    if (otpCode.length < 6) {
+      setOtpError('Please enter the 6-digit code sent to your email.');
+      return;
+    }
+
+    try {
+      setOtpVerifying(true);
+      setOtpError(null);
+      await verifyOtp(otpEmail.trim().toLowerCase(), otpCode);
+      // AuthContext saves to SecureStore and navigates
+    } catch (err) {
+      setOtpError(formatErrorMessage(err, 'Invalid or expired code'));
+    } finally {
+      setOtpVerifying(false);
+    }
+  };
+
+  const handleChangeEmail = () => {
+    setOtpStep(1);
+    setOtpCode('');
+    setOtpError(null);
+  };
+
+  const fillDemoAccount = (role) => {
+    const demoEmail = role === 'DONOR' ? 'donor1@lifedrop.test' : 'recipient1@lifedrop.test';
+    if (activeTab === 'password') {
+      setEmail(demoEmail);
+      setPassword('Password@123');
+      setPasswordError(null);
+    } else {
+      setOtpEmail(demoEmail);
+      setOtpError(null);
+    }
   };
 
   return (
@@ -94,7 +195,6 @@ export const LoginScreen = ({ navigation }) => {
               <Text style={styles.brandDrop}>Drop</Text>
             </View>
 
-            {/* Required Hero Text */}
             <Text style={styles.heroText}>Every Drop Counts. Every Life Saved.</Text>
             <Text style={styles.heroSubText}>
               Direct Peer-to-Peer Blood Donation Network. No intermediaries.
@@ -103,51 +203,209 @@ export const LoginScreen = ({ navigation }) => {
 
           {/* Form Card */}
           <Card style={styles.formCard}>
-            <Text style={styles.formTitle}>Sign In</Text>
+            
+            {/* Segmented Mode Toggle: Password | Email code */}
+            <View style={styles.tabContainer}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => {
+                  setActiveTab('password');
+                  setPasswordError(null);
+                }}
+                style={[
+                  styles.tabButton,
+                  activeTab === 'password' && styles.tabButtonActive,
+                ]}
+              >
+                <Feather
+                  name="lock"
+                  size={15}
+                  color={activeTab === 'password' ? colors.navyDark : colors.muted}
+                />
+                <Text
+                  style={[
+                    styles.tabButtonText,
+                    activeTab === 'password' && styles.tabButtonTextActive,
+                  ]}
+                >
+                  Password
+                </Text>
+              </TouchableOpacity>
 
-            {error && (
-              <View style={styles.errorBanner}>
-                <Ionicons name="alert-circle" size={18} color={colors.danger} />
-                <Text style={styles.errorBannerText}>{error}</Text>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => {
+                  setActiveTab('otp');
+                  setOtpError(null);
+                }}
+                style={[
+                  styles.tabButton,
+                  activeTab === 'otp' && styles.tabButtonActive,
+                ]}
+              >
+                <Feather
+                  name="key"
+                  size={15}
+                  color={activeTab === 'otp' ? colors.navyDark : colors.muted}
+                />
+                <Text
+                  style={[
+                    styles.tabButtonText,
+                    activeTab === 'otp' && styles.tabButtonTextActive,
+                  ]}
+                >
+                  Email code
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* TAB 1: Password Login */}
+            {activeTab === 'password' && (
+              <View>
+                {passwordError && (
+                  <View style={styles.errorBanner}>
+                    <Ionicons name="alert-circle" size={18} color={colors.danger} />
+                    <Text style={styles.errorBannerText}>{passwordError}</Text>
+                  </View>
+                )}
+
+                <InputField
+                  label="Email Address"
+                  placeholder="e.g. donor1@lifedrop.test"
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (passwordError) setPasswordError(null);
+                  }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  leftIcon={<Feather name="mail" size={18} color={colors.muted} />}
+                />
+
+                <InputField
+                  label="Password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    if (passwordError) setPasswordError(null);
+                  }}
+                  isPassword
+                  leftIcon={<Feather name="lock" size={18} color={colors.muted} />}
+                />
+
+                <CustomButton
+                  title="Sign In"
+                  onPress={handlePasswordLogin}
+                  loading={passwordLoading}
+                  variant="primary"
+                  style={styles.submitBtn}
+                />
               </View>
             )}
 
-            <InputField
-              label="Email Address"
-              placeholder="e.g. rahul@example.com"
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                if (error) setError(null);
-              }}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              leftIcon={<Feather name="mail" size={18} color={colors.muted} />}
-            />
+            {/* TAB 2: Email OTP Login */}
+            {activeTab === 'otp' && (
+              <View>
+                {otpError && (
+                  <View style={styles.errorBanner}>
+                    <Ionicons name="alert-circle" size={18} color={colors.danger} />
+                    <Text style={styles.errorBannerText}>{otpError}</Text>
+                  </View>
+                )}
 
-            <InputField
-              label="Password"
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                if (error) setError(null);
-              }}
-              isPassword
-              leftIcon={<Feather name="lock" size={18} color={colors.muted} />}
-            />
+                {/* STEP 1: Enter Email */}
+                {otpStep === 1 && (
+                  <View>
+                    <InputField
+                      label="Registered Email Address"
+                      placeholder="e.g. donor1@lifedrop.test"
+                      value={otpEmail}
+                      onChangeText={(text) => {
+                        setOtpEmail(text);
+                        if (otpError) setOtpError(null);
+                      }}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      leftIcon={<Feather name="mail" size={18} color={colors.muted} />}
+                    />
+                    <Text style={styles.otpHelperText}>
+                      We will email you a 6-digit login code. No password needed.
+                    </Text>
 
-            <CustomButton
-              title="Sign In"
-              onPress={handleLogin}
-              loading={loading}
-              variant="primary"
-              style={styles.submitBtn}
-            />
+                    <CustomButton
+                      title="Send code"
+                      onPress={handleSendOtp}
+                      loading={otpSending}
+                      variant="primary"
+                      style={styles.submitBtn}
+                    />
+                  </View>
+                )}
+
+                {/* STEP 2: Enter 6-digit Code */}
+                {otpStep === 2 && (
+                  <View>
+                    <View style={styles.otpHeaderInfo}>
+                      <Text style={styles.otpSentToText}>
+                        We sent a 6 digit code to{' '}
+                        <Text style={styles.otpSentEmail}>{otpEmail}</Text>
+                      </Text>
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={handleChangeEmail}
+                        style={styles.changeEmailBtn}
+                      >
+                        <Feather name="arrow-left" size={14} color={colors.primaryRed} />
+                        <Text style={styles.changeEmailText}>Change email</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    <OtpInput
+                      code={otpCode}
+                      onChangeCode={(code) => {
+                        setOtpCode(code);
+                        if (otpError) setOtpError(null);
+                      }}
+                      length={6}
+                      disabled={otpVerifying}
+                    />
+
+                    <CustomButton
+                      title="Verify and sign in"
+                      onPress={handleVerifyOtp}
+                      loading={otpVerifying}
+                      disabled={otpCode.length < 6 || otpVerifying}
+                      variant="primary"
+                      style={styles.submitBtn}
+                    />
+
+                    <View style={styles.resendContainer}>
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={handleResendOtp}
+                        disabled={countdown > 0 || otpSending}
+                      >
+                        <Text
+                          style={[
+                            styles.resendText,
+                            countdown > 0 && styles.resendTextDisabled,
+                          ]}
+                        >
+                          {countdown > 0
+                            ? `Resend code (${countdown}s)`
+                            : 'Resend code'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              </View>
+            )}
 
             {/* Quick Demo Credentials */}
             <View style={styles.demoSection}>
-              <Text style={styles.demoLabel}>Quick Demo Fill (Password@123):</Text>
+              <Text style={styles.demoLabel}>Quick Demo Fill:</Text>
               <View style={styles.demoButtonsRow}>
                 <TouchableOpacity
                   activeOpacity={0.7}
@@ -253,12 +511,34 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderPink,
   },
-  formTitle: {
-    fontFamily: fontFamilies.extraBold,
-    fontSize: 20,
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#F1F5F9',
+    borderRadius: radii.button,
+    padding: 3,
+    marginBottom: spacing.lg,
+  },
+  tabButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.sm,
+    borderRadius: radii.button - 2,
+    gap: 6,
+  },
+  tabButtonActive: {
+    backgroundColor: '#FFFFFF',
+    ...shadows.card,
+  },
+  tabButtonText: {
+    fontFamily: fontFamilies.semiBold,
+    fontSize: 13,
+    color: colors.muted,
+  },
+  tabButtonTextActive: {
+    fontFamily: fontFamilies.bold,
     color: colors.navyDark,
-    marginBottom: spacing.md,
-    letterSpacing: -0.4,
   },
   errorBanner: {
     flexDirection: 'row',
@@ -276,6 +556,52 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.danger,
     flex: 1,
+  },
+  otpHelperText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: 12,
+    color: colors.muted,
+    marginTop: 2,
+    marginBottom: spacing.xs,
+  },
+  otpHeaderInfo: {
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  otpSentToText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: 13,
+    color: colors.navyDark,
+    textAlign: 'center',
+  },
+  otpSentEmail: {
+    fontFamily: fontFamilies.bold,
+    color: colors.navyDark,
+  },
+  changeEmailBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+    paddingVertical: 2,
+  },
+  changeEmailText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: 12,
+    color: colors.primaryRed,
+  },
+  resendContainer: {
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  resendText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: 13,
+    color: colors.primaryRed,
+  },
+  resendTextDisabled: {
+    color: colors.muted,
+    fontFamily: fontFamilies.medium,
   },
   submitBtn: {
     marginTop: spacing.md,

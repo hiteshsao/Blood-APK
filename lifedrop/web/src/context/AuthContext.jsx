@@ -88,6 +88,30 @@ export function AuthProvider({ children }) {
     return data;
   }, []);
 
+  const sendOtp = useCallback(async (email) => {
+    const res = await axiosInstance.post('/api/auth/otp/send', {
+      email: email.trim().toLowerCase(),
+    });
+    return res.data;
+  }, []);
+
+  const verifyOtp = useCallback(async (email, otp) => {
+    const res = await axiosInstance.post('/api/auth/otp/verify', {
+      email: email.trim().toLowerCase(),
+      otp: otp.trim(),
+    });
+    const data = res.data?.data;
+    if (data?.token) {
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('lifedrop_token', data.token);
+      if (data.user) {
+        localStorage.setItem('lifedrop_user', JSON.stringify(data.user));
+      }
+    }
+    return data;
+  }, []);
+
   const logout = useCallback(() => {
     setToken(null);
     setUser(null);
@@ -116,6 +140,8 @@ export function AuthProvider({ children }) {
         token,
         login,
         register,
+        sendOtp,
+        verifyOtp,
         logout,
         refreshUser,
         loading,

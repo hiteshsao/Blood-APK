@@ -6,3 +6,4 @@ export { StatusBadge } from './StatusBadge';
 export { Loader } from './Loader';
 export { EmptyState } from './EmptyState';
 export { ScreenHeader } from './ScreenHeader';
+export { OtpInput } from './OtpInput';

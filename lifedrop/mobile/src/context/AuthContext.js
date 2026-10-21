@@ -160,6 +160,25 @@ export const AuthProvider = ({ children }) => {
     return data;
   }, []);
 
+  // OTP Send method
+  const sendOtp = useCallback(async (email) => {
+    return await authApi.sendOtp(email);
+  }, []);
+
+  // OTP Verify method
+  const verifyOtp = useCallback(async (email, otp) => {
+    const data = await authApi.verifyOtp(email, otp);
+    if (data?.token) {
+      setToken(data.token);
+      setUser(data.user);
+      await saveToStorage(TOKEN_STORAGE_KEY, data.token);
+      if (data.user) {
+        await saveToStorage(USER_STORAGE_KEY, JSON.stringify(data.user));
+      }
+    }
+    return data;
+  }, []);
+
   // Refresh current user profile
   const refreshUser = useCallback(async () => {
     try {
@@ -186,12 +205,14 @@ export const AuthProvider = ({ children }) => {
       role,
       login,
       register,
+      sendOtp,
+      verifyOtp,
       logout,
       refreshUser,
       loading,
       isAuthenticated: !!token,
     }),
-    [token, user, role, login, register, logout, refreshUser, loading]
+    [token, user, role, login, register, sendOtp, verifyOtp, logout, refreshUser, loading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
