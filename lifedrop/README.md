@@ -1,4 +1,4 @@
-# LifeDrop — Peer-to-Peer Blood Donation Network
+# City Help 24x7 — Peer-to-Peer Blood Donation Network
 
 LifeDrop is a direct peer-to-peer blood donation network connecting only two types of users:
 1. **DONOR** — A generous individual willing to donate blood.

@@ -23,15 +23,15 @@ export const SplashScreen = () => {
           </LinearGradient>
         </View>
 
-        {/* Brand Name: "Life" in navy + "Drop" in red */}
+        {/* Brand Name: "City Help" in navy + " 24x7" in red */}
         <View style={styles.brandRow}>
-          <Text style={styles.brandLife}>Life</Text>
-          <Text style={styles.brandDrop}>Drop</Text>
+          <Text style={styles.brandLife}>City Help</Text>
+          <Text style={styles.brandDrop}> 24x7</Text>
         </View>
 
         {/* Tagline */}
-        <Text style={styles.tagline}>BLOOD DONATION NETWORK</Text>
-        <Text style={styles.subTagline}>Direct Peer-to-Peer Life Saving</Text>
+        <Text style={styles.tagline}>YOUR CITY. YOUR COMMUNITY.</Text>
+        <Text style={styles.subTagline}>Blood • Services • Help — 24x7</Text>
       </View>
 
       <View style={styles.bottomBox}>
