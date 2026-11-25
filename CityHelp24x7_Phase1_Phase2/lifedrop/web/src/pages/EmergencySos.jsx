@@ -514,7 +514,7 @@ export default function EmergencySos() {
           <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <div>
             <strong className="font-extrabold block text-amber-950 mb-0.5">Medical Safety Notice:</strong>
-            LifeDrop connects donors and recipients. In a medical emergency, contact a hospital or call 112.
+            MyCityZone connects donors and recipients. In a medical emergency, contact a hospital or call 112.
           </div>
         </div>
 

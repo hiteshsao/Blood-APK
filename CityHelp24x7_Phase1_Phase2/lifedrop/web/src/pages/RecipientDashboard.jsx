@@ -182,7 +182,7 @@ export default function RecipientDashboard() {
     setActionId(requestId);
     try {
       await axiosInstance.post(`/api/recipient/requests/${requestId}/complete`);
-      toast.success('Request marked as COMPLETED. Thank you for using LifeDrop!');
+      toast.success('Request marked as COMPLETED. Thank you for using MyCityZone!');
       fetchMyRequests();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to complete request.');

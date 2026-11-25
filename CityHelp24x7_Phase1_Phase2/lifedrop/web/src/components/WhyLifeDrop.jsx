@@ -43,7 +43,7 @@ export default function WhyLifeDrop() {
             Pure Peer-to-Peer Architecture
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-navy-900 tracking-tight">
-            Why Choose LifeDrop?
+            Why Choose MyCityZone?
           </h2>
           <p className="mt-4 text-base sm:text-lg text-slate-600">
             Engineered solely for donors and recipients. Direct peer-to-peer connection, zero commercial brokers, zero delays.

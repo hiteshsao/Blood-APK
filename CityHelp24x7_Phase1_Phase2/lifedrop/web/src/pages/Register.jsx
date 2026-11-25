@@ -129,7 +129,7 @@ export default function Register() {
       };
 
       const result = await register(payload);
-      toast.success(`Welcome to LifeDrop, ${formData.name.split(' ')[0]}!`);
+      toast.success(`Welcome to MyCityZone, ${formData.name.split(' ')[0]}!`);
       
       if (role === 'DONOR') {
         navigate('/donor/dashboard');
@@ -164,7 +164,7 @@ export default function Register() {
             <Heart className="w-6 h-6 fill-white stroke-white" />
           </div>
           <h1 className="text-3xl font-extrabold text-navy-900 tracking-tight">
-            Join the LifeDrop Network
+            Join the MyCityZone Network
           </h1>
           <p className="text-slate-600 text-sm mt-1">
             Connect directly with verified donors and recipients with zero intermediaries.
@@ -456,7 +456,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#991B1B] hover:bg-[#7F1D1D] text-white font-extrabold py-4 px-6 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-base"
+              className="w-full bg-brand-700 hover:bg-brand-800 text-white font-extrabold py-4 px-6 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-base"
             >
               <Heart className="w-5 h-5 fill-white" />
               <span>{loading ? 'Creating Your Account...' : `Register as ${role === 'DONOR' ? 'Voluntary Donor' : 'Blood Recipient'}`}</span>

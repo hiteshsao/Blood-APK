@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Droplet, Lock, Mail, AlertCircle, Sparkles, KeyRound, ArrowLeft, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Building2, Lock, Mail, AlertCircle, Sparkles, KeyRound, ArrowLeft, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { homePathFor } from '../utils/userRoles';
 import { useToast } from '../context/ToastContext';
@@ -226,14 +226,14 @@ export default function Login() {
         
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#991B1B] to-[#C62828] p-2 flex items-center justify-center text-white mx-auto shadow-md mb-3">
-            <Droplet className="w-6 h-6 fill-white stroke-white" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-brand p-2 flex items-center justify-center text-white mx-auto shadow-md mb-3 animate-pop-in">
+            <Building2 className="w-6 h-6" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-navy-950 tracking-tight">
-            Sign In to LifeDrop
+            Sign In to MyCityZone
           </h1>
           <p className="text-slate-600 text-xs sm:text-sm mt-1">
-            Access your voluntary donor or recipient account.
+            Book local services and get blood help, all in one account.
           </p>
         </div>
 
@@ -367,7 +367,7 @@ export default function Login() {
                 type="submit"
                 id="login-submit-btn"
                 disabled={passwordLoading}
-                className="w-full bg-[#991B1B] hover:bg-[#7F1D1D] text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-red-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full bg-brand-700 hover:bg-brand-800 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-blue-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <span>{passwordLoading ? 'Authenticating...' : 'Sign In'}</span>
               </button>
@@ -412,7 +412,7 @@ export default function Login() {
                     type="submit"
                     id="otp-send-btn"
                     disabled={otpSending}
-                    className="w-full bg-[#991B1B] hover:bg-[#7F1D1D] text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-red-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full bg-brand-700 hover:bg-brand-800 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-blue-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     <span>{otpSending ? 'Sending Code...' : 'Send Code'}</span>
                   </button>
@@ -460,7 +460,7 @@ export default function Login() {
                     type="submit"
                     id="otp-verify-btn"
                     disabled={otpVerifying || otpValues.join('').length < 6}
-                    className="w-full bg-[#991B1B] hover:bg-[#7F1D1D] text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-red-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full bg-brand-700 hover:bg-brand-800 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-blue-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     <span>{otpVerifying ? 'Verifying Code...' : 'Verify and Sign In'}</span>
                   </button>

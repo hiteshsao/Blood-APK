@@ -544,7 +544,7 @@ export default function SosModal({
             <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div className="font-medium">
               <strong className="font-extrabold block text-amber-950 mb-0.5">Important Safety Disclaimer:</strong>
-              LifeDrop connects donors and recipients. In a medical emergency, contact a hospital or call 112.
+              MyCityZone connects donors and recipients. In a medical emergency, contact a hospital or call 112.
             </div>
           </div>
 

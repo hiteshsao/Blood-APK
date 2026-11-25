@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Droplet, Heart, Shield, PhoneCall, ExternalLink } from 'lucide-react';
+import { Building2, Heart, Shield, PhoneCall, ExternalLink } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -13,27 +13,27 @@ export default function Footer() {
           {/* Brand Info (2 cols on lg) */}
           <div className="lg:col-span-2 space-y-4">
             <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#991B1B] via-[#B91C1C] to-[#C62828] p-2 flex items-center justify-center text-white shadow-md">
-                <Droplet className="w-5 h-5 fill-white stroke-white" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-brand p-2 flex items-center justify-center text-white shadow-md">
+                <Building2 className="w-5 h-5" />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-baseline text-2xl font-black tracking-tight leading-none">
-                  <span className="text-white">Life</span>
-                  <span className="text-[#EF4444]">Drop</span>
+                  <span className="text-white">MyCity</span>
+                  <span className="text-brand-400">Zone</span>
                 </div>
                 <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase mt-0.5">
-                  Blood Donation Network
+                  Services • Blood • Help
                 </span>
               </div>
             </Link>
             
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
-              A peer-to-peer voluntary blood donor network connecting compassionate donors directly with recipients in need of urgent transfusions.
+              Your city's help in one place: book verified local professionals and reach blood donors directly in an emergency.
             </p>
 
             <div className="pt-2 flex items-center gap-2 text-xs text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-3 py-1.5 rounded-lg w-fit">
               <Shield className="w-3.5 h-3.5" />
-              <span>100% Free & Voluntary • Zero Commercial Intermediaries</span>
+              <span>Verified pros • Free, direct blood help</span>
             </div>
           </div>
 
@@ -46,6 +46,9 @@ export default function Footer() {
               </li>
               <li>
                 <a href="/#how-it-works" className="hover:text-white transition-colors">How It Works</a>
+              </li>
+              <li>
+                <Link to="/services" className="hover:text-white transition-colors">Services</Link>
               </li>
               <li>
                 <Link to="/find-donors" className="hover:text-white transition-colors">Find Donors</Link>
@@ -109,13 +112,13 @@ export default function Footer() {
           </div>
           <div className="flex-1">
             <span className="font-bold text-white">Medical Disclaimer: </span>
-            LifeDrop connects donors and recipients. In a medical emergency, contact a hospital or call 112.
+            MyCityZone connects donors and recipients. In a medical emergency, contact a hospital or call 112.
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4 pt-4">
-          <p>© {new Date().getFullYear()} LifeDrop Network. Voluntary, open community initiative.</p>
+          <p>© {new Date().getFullYear()} MyCityZone Network. Voluntary, open community initiative.</p>
           <p className="flex items-center gap-1">
             Built with care for voluntary life savers <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 inline" />
           </p>

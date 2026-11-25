@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Droplet,
+  Building2,
   AlertTriangle,
   Menu,
   X,
@@ -37,6 +37,7 @@ export default function Navbar() {
   // Navigation Links
   const navLinks = [
     { name: 'Home', path: '/' },
+    { name: 'Services', path: '/services' },
     { name: 'Find Donors', path: '/find-donors' },
     { name: 'Blood Requests', path: '/requests' },
   ];
@@ -149,18 +150,19 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* LifeDrop Logo */}
+          {/* MyCityZone Logo */}
           <Link to="/" className="flex items-center gap-3 group focus:outline-none rounded-lg">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#991B1B] via-[#B91C1C] to-[#C62828] p-2 flex items-center justify-center text-white shadow-md shadow-red-900/10 group-hover:scale-105 transition-transform">
-              <Droplet className="w-6 h-6 fill-white stroke-white" />
+            <div className="relative w-11 h-11 rounded-2xl bg-gradient-brand p-2 flex items-center justify-center text-white shadow-md shadow-blue-900/20 group-hover:scale-105 transition-transform">
+              <Building2 className="w-6 h-6" />
+              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-white" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-baseline text-2xl font-black tracking-tight leading-none">
-                <span className="text-[#0F172A]">Life</span>
-                <span className="text-[#DC2626]">Drop</span>
+                <span className="text-[#0F172A]">MyCity</span>
+                <span className="text-brand-600">Zone</span>
               </div>
               <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase mt-0.5">
-                Blood Donation Network
+                Services • Blood • Help
               </span>
             </div>
           </Link>
@@ -175,7 +177,7 @@ export default function Navbar() {
                   to={link.path}
                   className={`text-sm font-bold px-3.5 py-2 rounded-full transition-all duration-200 ${
                     active
-                      ? 'bg-[#FEE2E2] text-[#991B1B] shadow-sm'
+                      ? 'bg-brand-50 text-brand-700 shadow-sm'
                       : 'text-slate-600 hover:text-navy-900 hover:bg-slate-100/70'
                   }`}
                 >
@@ -238,7 +240,7 @@ export default function Navbar() {
                           <button
                             type="button"
                             onClick={handleMarkAllAsRead}
-                            className="text-xs font-bold text-primary-700 hover:text-primary-900 flex items-center gap-1"
+                            className="text-xs font-bold text-brand-700 hover:text-brand-900 flex items-center gap-1"
                           >
                             <CheckCheck className="w-3.5 h-3.5" />
                             <span>Mark all read</span>
@@ -299,10 +301,10 @@ export default function Navbar() {
                   to="/profile"
                   className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-navy-900 px-3 py-1.5 rounded-xl hover:bg-slate-100 transition-colors"
                 >
-                  <User className="w-4 h-4 text-primary-600" />
+                  <User className="w-4 h-4 text-brand-600" />
                   <span>{user?.name?.split(' ')[0] || 'My Account'}</span>
                   {user?.bloodGroup && (
-                    <span className="bg-primary-100 text-primary-800 text-xs px-2 py-0.5 rounded-full font-bold">
+                    <span className="bg-brand-100 text-brand-800 text-xs px-2 py-0.5 rounded-full font-bold">
                       {user.bloodGroup.replace('_POSITIVE', '+').replace('_NEGATIVE', '-')}
                     </span>
                   )}
@@ -326,7 +328,7 @@ export default function Navbar() {
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-[#991B1B] hover:bg-[#7F1D1D] text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm hover:shadow hover:scale-[1.02] active:scale-[0.98]"
+                  className="bg-brand-700 hover:bg-brand-800 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm hover:shadow hover:scale-[1.02] active:scale-[0.98]"
                 >
                   Register
                 </Link>
@@ -373,7 +375,7 @@ export default function Navbar() {
                   to={link.path}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`px-4 py-2.5 rounded-xl text-base font-bold transition-colors ${
-                    active ? 'bg-[#FEE2E2] text-[#991B1B]' : 'text-slate-700 hover:bg-slate-50'
+                    active ? 'bg-brand-50 text-brand-700' : 'text-slate-700 hover:bg-slate-50'
                   }`}
                 >
                   {link.name}
@@ -428,7 +430,7 @@ export default function Navbar() {
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-center py-2.5 rounded-xl font-bold bg-[#991B1B] text-white text-sm"
+                  className="text-center py-2.5 rounded-xl font-bold bg-brand-700 text-white text-sm"
                 >
                   Register
                 </Link>

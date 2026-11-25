@@ -15,7 +15,7 @@ export default function Terms() {
             Terms of Service
           </h1>
           <p className="text-slate-600 text-sm mt-1">
-            Rules and principles governing voluntary participation on the LifeDrop network.
+            Rules and principles governing voluntary participation on the MyCityZone network.
           </p>
         </div>
 
@@ -27,7 +27,7 @@ export default function Terms() {
               <span>1. 100% Voluntary & Non-Commercial</span>
             </h2>
             <p>
-              Blood donation through LifeDrop is purely altruistic and voluntary. Selling blood, requesting monetary compensation, or offering financial rewards is strictly prohibited and violates national health regulations. Accounts engaged in commercial blood transactions will be permanently terminated.
+              Blood donation through MyCityZone is purely altruistic and voluntary. Selling blood, requesting monetary compensation, or offering financial rewards is strictly prohibited and violates national health regulations. Accounts engaged in commercial blood transactions will be permanently terminated.
             </p>
           </section>
 
@@ -37,7 +37,7 @@ export default function Terms() {
               <span>2. Emergency Nature & Clinical Verification</span>
             </h2>
             <p>
-              LifeDrop connects willing voluntary donors to emergency recipients in critical situations. All transfusions and medical procedures must be performed by qualified clinical professionals in licensed healthcare facilities. LifeDrop does not administer medical treatments or test blood units directly.
+              MyCityZone connects willing voluntary donors to emergency recipients in critical situations. All transfusions and medical procedures must be performed by qualified clinical professionals in licensed healthcare facilities. MyCityZone does not administer medical treatments or test blood units directly.
             </p>
           </section>
 

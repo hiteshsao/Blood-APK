@@ -23,10 +23,10 @@ export default function PrivacyPolicy() {
             <ShieldCheck className="w-7 h-7" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-navy-950 tracking-tight">
-            LifeDrop Privacy Policy
+            MyCityZone Privacy Policy
           </h1>
           <p className="text-slate-600 text-sm sm:text-base mt-2 max-w-2xl mx-auto">
-            Your trust is sacred. Learn how LifeDrop safeguards donor and recipient confidentiality in our emergency peer-to-peer blood donation network.
+            Your trust is sacred. Learn how MyCityZone safeguards donor and recipient confidentiality in our emergency peer-to-peer blood donation network.
           </p>
           <div className="inline-flex items-center gap-2 mt-3 px-3 py-1 bg-red-50 text-red-700 text-xs font-semibold rounded-full border border-red-100">
             <span>Effective Date: October 2026</span>
@@ -45,7 +45,7 @@ export default function PrivacyPolicy() {
               <span>1. Zero Intermediaries & Voluntary Network</span>
             </h2>
             <p>
-              LifeDrop is a voluntary peer-to-peer platform designed to connect blood donors and recipients directly during medical emergencies. We do not sell data, host advertising networks, or monetize personal health profiles.
+              MyCityZone is a voluntary peer-to-peer platform designed to connect blood donors and recipients directly during medical emergencies. We do not sell data, host advertising networks, or monetize personal health profiles.
             </p>
           </section>
 
@@ -56,7 +56,7 @@ export default function PrivacyPolicy() {
               <span>2. What Data We Collect</span>
             </h2>
             <p>
-              To ensure medical compatibility and rapid geographic dispatch, LifeDrop collects only the minimum necessary data:
+              To ensure medical compatibility and rapid geographic dispatch, MyCityZone collects only the minimum necessary data:
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
@@ -166,7 +166,7 @@ export default function PrivacyPolicy() {
             </p>
             <div className="p-4 rounded-2xl bg-red-50/60 border border-red-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span className="font-bold text-navy-950 block text-sm">LifeDrop Privacy & Data Protection Desk</span>
+                <span className="font-bold text-navy-950 block text-sm">MyCityZone Privacy & Data Protection Desk</span>
                 <span className="text-xs text-slate-600">Official Data Protection Contact</span>
               </div>
               <a

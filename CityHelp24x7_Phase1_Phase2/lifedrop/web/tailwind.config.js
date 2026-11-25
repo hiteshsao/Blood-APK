@@ -7,6 +7,20 @@ export default {
   theme: {
     extend: {
       colors: {
+        // MyCityZone brand (app chrome, services). `primary` below stays red for blood / SOS.
+        brand: {
+          950: '#0B1A45',
+          900: '#1E3A8A',
+          800: '#1E40AF',
+          700: '#1D4ED8',
+          600: '#2563EB',
+          500: '#3B82F6',
+          400: '#60A5FA',
+          300: '#93C5FD',
+          200: '#BFDBFE',
+          100: '#DBEAFE',
+          50: '#EFF6FF',
+        },
         navy: {
           950: '#070D1A',
           900: '#0F172A',
@@ -38,7 +52,33 @@ export default {
         'sos-hover': '0 0 28px rgba(220, 38, 38, 0.7)',
         'card-soft': '0 2px 10px rgba(0, 0, 0, 0.04), 0 12px 30px rgba(0, 0, 0, 0.06)',
       },
+      keyframes: {
+        'fade-up': {
+          '0%': { opacity: '0', transform: 'translateY(18px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'pop-in': {
+          '0%': { opacity: '0', transform: 'scale(0.6)' },
+          '70%': { opacity: '1', transform: 'scale(1.06)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        'ring-pulse': {
+          '0%': { opacity: '0.5', transform: 'scale(0.7)' },
+          '100%': { opacity: '0', transform: 'scale(2.3)' },
+        },
+        'intro-out': {
+          '0%': { opacity: '1', transform: 'scale(1)' },
+          '100%': { opacity: '0', transform: 'scale(1.08)', visibility: 'hidden' },
+        },
+      },
+      animation: {
+        'fade-up': 'fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'pop-in': 'pop-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'ring-pulse': 'ring-pulse 1.8s ease-out infinite',
+        'intro-out': 'intro-out 0.45s ease-in 1.6s forwards',
+      },
       backgroundImage: {
+        'gradient-brand': 'linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 55%, #3B82F6 100%)',
         'gradient-alert': 'linear-gradient(to right, #991B1B, #C62828)',
         'gradient-sos': 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
         'gradient-hero-text': 'linear-gradient(135deg, #991B1B 0%, #DC2626 50%, #EF4444 100%)',

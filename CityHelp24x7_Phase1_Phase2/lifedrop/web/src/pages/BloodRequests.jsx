@@ -344,7 +344,7 @@ export default function BloodRequests() {
                 <h3 className="text-lg font-bold text-navy-900">Report Suspicious Blood Request</h3>
               </div>
               <p className="text-xs text-slate-500 mb-4">
-                LifeDrop has zero intermediaries and strictly enforces voluntary donation. If a request is reported 3 times by independent users, it is automatically cancelled.
+                MyCityZone has zero intermediaries and strictly enforces voluntary donation. If a request is reported 3 times by independent users, it is automatically cancelled.
               </p>
 
               <form onSubmit={handleReport} className="space-y-4">

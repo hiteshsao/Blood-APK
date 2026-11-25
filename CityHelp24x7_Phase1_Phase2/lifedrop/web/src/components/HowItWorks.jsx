@@ -47,7 +47,7 @@ export default function HowItWorks() {
             Streamlined 4-Step Process
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-navy-900 tracking-tight">
-            How LifeDrop Works
+            How MyCityZone Works
           </h2>
           <p className="mt-4 text-base sm:text-lg text-slate-600">
             From emergency request to a life-saving match, our peer-to-peer network operates in minutes when every second counts.
