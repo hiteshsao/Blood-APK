@@ -9,9 +9,8 @@ Pehla terminal kholo:
 
 cd backend
 
-$env:DB_PASS='hitesh1312'
-.\mvnw.cmd spring-boot:run
- -Dspring-boot.run.profiles=dev
+$env:DB_PASS='<your-db-password>'
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
 
 
 Ise chalte rehne do.
