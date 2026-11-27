@@ -70,7 +70,7 @@ export const LoginScreen = ({ navigation }) => {
 
   const formatErrorMessage = (err, defaultMsg) => {
     if (!err?.response) {
-      return 'Unable to connect to the MyCityZone server. Please check your internet connection.';
+      return 'MyCityZone server is waking up or unreachable. Please wait a minute and try again.';
     }
     if (err.response.status === 429) {
       return 'Please wait before requesting another code.';

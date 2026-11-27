@@ -42,7 +42,8 @@ export const axiosInstance = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
-  timeout: 15000,
+  // The hosted server (Render free plan) sleeps when idle and needs ~50 s to wake up.
+  timeout: 60000,
 });
 
 // Broadcast listener callback for 401 unauthenticated events
@@ -77,6 +78,13 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
+    // No response at all (server waking up / flaky network): retry once.
+    const cfg = error.config;
+    if (!error.response && cfg && !cfg.__retried) {
+      cfg.__retried = true;
+      await new Promise((r) => setTimeout(r, 2000));
+      return axiosInstance(cfg);
+    }
     if (error.response && error.response.status === 401) {
       try {
         if (Platform.OS === 'web') {
