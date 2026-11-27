@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   action: {
     fontFamily: fontFamilies.bold,
     fontSize: 12.5,
-    color: colors.info,
+    color: colors.brand.main,
   },
 });
 

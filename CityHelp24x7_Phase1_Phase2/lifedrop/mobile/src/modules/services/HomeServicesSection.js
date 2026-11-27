@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCity } from '../../context/CityContext';
 import SectionHeader from '../../components/SectionHeader';
@@ -65,8 +64,11 @@ export const HomeServicesSection = ({ navigation }) => {
 
   return (
     <View>
-      {/* Search */}
-      <FadeInUp delay={90}>
+      {/* Home services (shown after the Blood section) */}
+      <FadeInUp delay={380}>
+        <SectionHeader title="Home services" actionLabel="View all" onActionPress={() => navigation.navigate('Services')} />
+      </FadeInUp>
+      <FadeInUp delay={420}>
       <View style={[styles.search, shadows.cardSoft]}>
         <Ionicons name="search" size={19} color={colors.muted} />
         <TextInput
@@ -86,32 +88,8 @@ export const HomeServicesSection = ({ navigation }) => {
       </View>
       </FadeInUp>
 
-      {/* Hero */}
-      <FadeInUp delay={180} distance={26} fromScale={0.96}>
-      <LinearGradient
-        colors={colors.gradients.brandHero}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.hero, shadows.brandGlow]}
-      >
-        <View style={styles.heroCircleLg} />
-        <View style={styles.heroCircleSm} />
-        <MaterialCommunityIcons name="account-hard-hat" size={92} color="rgba(255,255,255,0.9)" style={styles.heroArt} />
-        <View style={styles.heroPill}>
-          <Ionicons name="shield-checkmark" size={12} color="#FFFFFF" />
-          <Text style={styles.heroPillText}>VERIFIED EXPERTS</Text>
-        </View>
-        <Text style={styles.heroTitle}>Home services,{'\n'}right on time.</Text>
-        <Text style={styles.heroSub}>Trusted local pros in {cityName}</Text>
-        <TouchableOpacity activeOpacity={0.9} style={styles.heroBtn} onPress={() => navigation.navigate('Services')}>
-          <Text style={styles.heroBtnText}>Book a service</Text>
-          <Ionicons name="arrow-forward" size={16} color={brand.main} />
-        </TouchableOpacity>
-      </LinearGradient>
-      </FadeInUp>
-
       {/* Trust strip */}
-      <FadeInUp delay={300} style={styles.trustRow}>
+      <FadeInUp delay={480} style={styles.trustRow}>
         {TRUST.map((t) => (
           <View key={t.label} style={styles.trustItem}>
             <Ionicons name={t.icon} size={14} color={brand.main} />
@@ -121,12 +99,12 @@ export const HomeServicesSection = ({ navigation }) => {
       </FadeInUp>
 
       {/* Categories: tiles pop in one after another */}
-      <FadeInUp delay={360}>
-        <SectionHeader title="Services" actionLabel="View all" onActionPress={() => navigation.navigate('Services')} />
+      <FadeInUp delay={540}>
+        <SectionHeader title="Categories" />
       </FadeInUp>
       <View style={styles.grid}>
         {tiles.map((c, i) => (
-          <FadeInUp key={c.id} delay={420 + i * 55} distance={10} fromScale={0.7} style={styles.tile}>
+          <FadeInUp key={c.id} delay={600 + i * 55} distance={10} fromScale={0.7} style={styles.tile}>
             <TouchableOpacity style={styles.tileInner} activeOpacity={0.85} onPress={() => openCategory(c)}>
               <View style={styles.tileIcon}>
                 <Ionicons name={c.icon || 'construct-outline'} size={25} color={brand.main} />
@@ -138,7 +116,7 @@ export const HomeServicesSection = ({ navigation }) => {
           </FadeInUp>
         ))}
         {categories.length > 0 ? (
-          <FadeInUp delay={420 + tiles.length * 55} distance={10} fromScale={0.7} style={styles.tile}>
+          <FadeInUp delay={600 + tiles.length * 55} distance={10} fromScale={0.7} style={styles.tile}>
             <TouchableOpacity style={styles.tileInner} activeOpacity={0.85} onPress={() => navigation.navigate('Services')}>
               <View style={[styles.tileIcon, styles.tileIconMore]}>
                 <Ionicons name="grid" size={22} color={colors.navySlate} />
@@ -173,7 +151,7 @@ export const HomeServicesSection = ({ navigation }) => {
       ) : null}
 
       {/* Top rated */}
-      <FadeInUp delay={700}>
+      <FadeInUp delay={950}>
       <SectionHeader
         title="Top rated near you"
         actionLabel="See all"
@@ -239,7 +217,7 @@ const styles = StyleSheet.create({
     height: 52,
     borderWidth: 1,
     borderColor: '#EEF2F7',
-    marginTop: spacing.md,
+    marginTop: 0,
   },
   searchInput: {
     flex: 1,
@@ -372,7 +350,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#E6EDFA',
+    borderColor: '#F5DADA',
     alignItems: 'center',
     justifyContent: 'center',
   },

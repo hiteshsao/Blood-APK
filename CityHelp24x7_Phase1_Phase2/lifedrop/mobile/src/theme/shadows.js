@@ -13,9 +13,9 @@ export const shadows = {
     elevation: 8,
   },
 
-  // Brand blue glow for primary buttons and the Home hero
+  // Brand glow for primary buttons and the Home hero
   brandGlow: {
-    shadowColor: '#1D4ED8',
+    shadowColor: '#B91C1C',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 16,

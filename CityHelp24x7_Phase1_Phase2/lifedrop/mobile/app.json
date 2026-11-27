@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1E3A8A"
+      "backgroundColor": "#7F1D1D"
     },
     "ios": {
       "supportsTablet": true,
@@ -22,7 +22,7 @@
     "android": {
       "package": "com.lifedrop.app",
       "adaptiveIcon": {
-        "backgroundColor": "#1D4ED8",
+        "backgroundColor": "#B91C1C",
         "foregroundImage": "./assets/adaptive-icon.png"
       },
       "permissions": [
@@ -54,7 +54,7 @@
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
-          "color": "#1D4ED8"
+          "color": "#DC2626"
         }
       ],
       "expo-splash-screen",

@@ -1,17 +1,17 @@
 /**
  * MyCityZone Design System - Color Palette
- * App brand is blue (services-first). Red stays the Blood module / SOS accent.
+ * One red UI across the app (blood first, then services).
  */
 
 export const colors = {
   // App brand (header, tabs, primary buttons, login). Use these for anything not blood-specific.
   brand: {
-    main: '#1D4ED8',
-    mid: '#2563EB',
-    dark: '#1E3A8A',
-    tint: '#DBEAFE',
-    soft: '#EFF6FF',
-    border: '#BFDBFE',
+    main: '#C62828',
+    mid: '#DC2626',
+    dark: '#7F1D1D',
+    tint: '#FEE2E2',
+    soft: '#FFF5F5',
+    border: '#FECACA',
   },
 
   // Blood module red accents (blood screens, SOS, urgent states)
@@ -25,7 +25,7 @@ export const colors = {
   materialRed: '#C62828',
 
   // Backgrounds (neutral app background; pinks are for blood-module surfaces)
-  pageBg: '#F5F7FB',
+  pageBg: '#FFF8F8',
   softPink: '#FEE2E2',
   pinkPill: '#FEE2E2',
   borderPink: '#FECACA',
@@ -79,7 +79,7 @@ export const colors = {
   // Per-module accent colours for the MyCityZone phases (main = icon/text, tint = soft background)
   modules: {
     blood: { main: '#DC2626', tint: '#FEE2E2' },
-    services: { main: '#2563EB', tint: '#DBEAFE' },
+    services: { main: '#DC2626', tint: '#FEE2E2' },
     directory: { main: '#16A34A', tint: '#DCFCE7' },
     news: { main: '#7C3AED', tint: '#EDE9FE' },
     jobs: { main: '#EA580C', tint: '#FFEDD5' },
@@ -88,8 +88,8 @@ export const colors = {
 
   // Gradients (Linear Gradient tuples)
   gradients: {
-    primary: ['#1E40AF', '#2563EB'],
-    brandHero: ['#1E3A8A', '#1D4ED8', '#3B82F6'],
+    primary: ['#991B1B', '#C62828'],
+    brandHero: ['#7F1D1D', '#B91C1C', '#DC2626'],
     partner: ['#0F172A', '#1E293B'],
     blood: ['#991B1B', '#C62828'],
     sos: ['#DC2626', '#BE123C'],

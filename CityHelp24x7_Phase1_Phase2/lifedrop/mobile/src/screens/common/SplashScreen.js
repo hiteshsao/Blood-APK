@@ -253,12 +253,12 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.extraBold,
     fontSize: 40,
     letterSpacing: -1,
-    color: '#93C5FD',
+    color: '#FECACA',
   },
   tagline: {
     fontFamily: fontFamilies.medium,
     fontSize: 15,
-    color: '#DBEAFE',
+    color: '#FEE2E2',
     marginTop: spacing.sm,
   },
   chipsRow: {
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   chipText: {
     fontFamily: fontFamilies.semiBold,
     fontSize: 11,
-    color: '#DBEAFE',
+    color: '#FEE2E2',
     marginTop: 6,
   },
   footer: {
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.medium,
     fontSize: 12,
     letterSpacing: 0.4,
-    color: 'rgba(219,234,254,0.8)',
+    color: 'rgba(254,226,226,0.85)',
   },
 });
 

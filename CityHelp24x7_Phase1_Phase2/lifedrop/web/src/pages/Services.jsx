@@ -81,7 +81,7 @@ export default function Services() {
       <section className="bg-gradient-brand text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <h1 className="animate-fade-up text-3xl sm:text-5xl font-extrabold tracking-tight">Home services</h1>
-          <p className="animate-fade-up text-blue-100 mt-2" style={{ animationDelay: '100ms' }}>
+          <p className="animate-fade-up text-red-100 mt-2" style={{ animationDelay: '100ms' }}>
             Trusted, verified professionals near you
           </p>
           <form

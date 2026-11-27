@@ -53,9 +53,9 @@ export default function IntroSplash() {
       </div>
 
       <h1 className="text-5xl font-extrabold tracking-tight mt-4 animate-fade-up" style={{ animationDelay: '250ms' }}>
-        MyCity<span className="text-blue-300">Zone</span>
+        MyCity<span className="text-red-200">Zone</span>
       </h1>
-      <p className="text-blue-100 mt-2 font-medium animate-fade-up" style={{ animationDelay: '450ms' }}>
+      <p className="text-red-100 mt-2 font-medium animate-fade-up" style={{ animationDelay: '450ms' }}>
         Your city. Every help. One app.
       </p>
 
@@ -67,7 +67,7 @@ export default function IntroSplash() {
               <span className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center">
                 <Icon className={`w-5 h-5 ${c.cls}`} />
               </span>
-              <span className="text-xs font-semibold text-blue-100 mt-1.5">{c.label}</span>
+              <span className="text-xs font-semibold text-red-100 mt-1.5">{c.label}</span>
             </div>
           );
         })}

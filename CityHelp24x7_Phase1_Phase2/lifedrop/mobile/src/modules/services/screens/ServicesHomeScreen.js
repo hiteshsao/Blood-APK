@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   input: { flex: 1, paddingVertical: 12, marginLeft: 8, fontFamily: fontFamilies.regular, fontSize: 14, color: colors.navyDark },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   cat: { width: '25%', alignItems: 'center', marginBottom: spacing.lg },
-  catIcon: { width: 58, height: 58, borderRadius: 18, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E6EDFA', alignItems: 'center', justifyContent: 'center' },
+  catIcon: { width: 58, height: 58, borderRadius: 18, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F5DADA', alignItems: 'center', justifyContent: 'center' },
   catText: { fontFamily: fontFamilies.bold, fontSize: 11, color: colors.navyDark, textAlign: 'center', marginTop: 6, paddingHorizontal: 2 },
   empty: { fontFamily: fontFamilies.regular, fontSize: 13, color: colors.muted, marginVertical: spacing.md },
 });

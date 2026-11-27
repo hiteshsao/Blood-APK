@@ -367,7 +367,7 @@ export default function Login() {
                 type="submit"
                 id="login-submit-btn"
                 disabled={passwordLoading}
-                className="w-full bg-brand-700 hover:bg-brand-800 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-blue-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full bg-brand-700 hover:bg-brand-800 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-red-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <span>{passwordLoading ? 'Authenticating...' : 'Sign In'}</span>
               </button>
@@ -412,7 +412,7 @@ export default function Login() {
                     type="submit"
                     id="otp-send-btn"
                     disabled={otpSending}
-                    className="w-full bg-brand-700 hover:bg-brand-800 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-blue-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full bg-brand-700 hover:bg-brand-800 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-red-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     <span>{otpSending ? 'Sending Code...' : 'Send Code'}</span>
                   </button>
@@ -460,7 +460,7 @@ export default function Login() {
                     type="submit"
                     id="otp-verify-btn"
                     disabled={otpVerifying || otpValues.join('').length < 6}
-                    className="w-full bg-brand-700 hover:bg-brand-800 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-blue-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full bg-brand-700 hover:bg-brand-800 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-red-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     <span>{otpVerifying ? 'Verifying Code...' : 'Verify and Sign In'}</span>
                   </button>

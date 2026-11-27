@@ -152,7 +152,7 @@ export default function Navbar() {
           
           {/* MyCityZone Logo */}
           <Link to="/" className="flex items-center gap-3 group focus:outline-none rounded-lg">
-            <div className="relative w-11 h-11 rounded-2xl bg-gradient-brand p-2 flex items-center justify-center text-white shadow-md shadow-blue-900/20 group-hover:scale-105 transition-transform">
+            <div className="relative w-11 h-11 rounded-2xl bg-gradient-brand p-2 flex items-center justify-center text-white shadow-md shadow-red-900/20 group-hover:scale-105 transition-transform">
               <Building2 className="w-6 h-6" />
               <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-white" />
             </div>

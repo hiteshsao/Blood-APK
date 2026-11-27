@@ -179,36 +179,40 @@ export const HomeScreen = ({ navigation }) => {
       </TouchableOpacity>
     ) : null;
 
-  // Services-first Home: Blood Help is one compact card between the services feed and the partner banner.
+  // Home order: Blood (main service) first, then home services, then the partner banner.
   const renderBloodHelp = () => (
-    <FadeInUp delay={820}>
-      <SectionHeader title="Emergency & health" />
+    <View>
+      <FadeInUp delay={90} distance={26} fromScale={0.96}>
+        <LinearGradient
+          colors={colors.gradients.sos}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.bloodHero, shadows.sosGlow]}
+        >
+          <View style={styles.heroCircle} />
+          <MaterialCommunityIcons name="heart-pulse" size={96} color="rgba(255,255,255,0.2)" style={styles.bloodHeroArt} />
+          <View style={styles.bloodHeroPill}>
+            <Ionicons name="water" size={12} color="#FFFFFF" />
+            <Text style={styles.bloodHeroPillText}>BLOOD SERVICE • 24x7</Text>
+          </View>
+          <Text style={styles.bloodHeroTitle}>Need blood?{'\n'}Donors near you, fast.</Text>
+          <Text style={styles.bloodHeroSub}>Free and direct. No middlemen.</Text>
+          <View style={styles.bloodBtns}>
+            <TouchableOpacity activeOpacity={0.9} style={[styles.bloodBtn, styles.bloodBtnWhite]} onPress={goRequestBlood}>
+              <Ionicons name="add-circle" size={17} color={blood.main} />
+              <Text style={[styles.bloodBtnText, { color: blood.main }]}>Request Blood</Text>
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.9} style={[styles.bloodBtn, styles.bloodBtnGhost]} onPress={goDonateBlood}>
+              <Ionicons name="heart" size={16} color="#FFFFFF" />
+              <Text style={[styles.bloodBtnText, { color: '#FFFFFF' }]}>Donate Blood</Text>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      </FadeInUp>
+      <FadeInUp delay={220}>
       <View style={[styles.bloodCard, shadows.cardSoft]}>
-        <View style={styles.bloodTop}>
-          <View style={styles.bloodIcon}>
-            <Ionicons name="water" size={22} color={blood.main} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.bloodTitle}>Blood Help</Text>
-            <Text style={styles.bloodSub}>Find donors or donate blood near you</Text>
-          </View>
-          <View style={styles.bloodBadge}>
-            <Text style={styles.bloodBadgeText}>24x7</Text>
-          </View>
-        </View>
-        <View style={styles.bloodBtns}>
-          <TouchableOpacity activeOpacity={0.9} style={[styles.bloodBtn, styles.bloodBtnFill]} onPress={goRequestBlood}>
-            <Ionicons name="add-circle" size={17} color="#FFFFFF" />
-            <Text style={[styles.bloodBtnText, { color: '#FFFFFF' }]}>Request Blood</Text>
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.9} style={[styles.bloodBtn, styles.bloodBtnOutline]} onPress={goDonateBlood}>
-            <Ionicons name="heart" size={16} color={blood.main} />
-            <Text style={[styles.bloodBtnText, { color: blood.main }]}>Donate Blood</Text>
-          </TouchableOpacity>
-        </View>
-        {donorStrip ? <View style={styles.bloodDonorWrap}>{donorStrip}</View> : null}
-        {incomingRow}
-        <View style={styles.bloodDivider} />
+        {donorStrip ? <View style={[styles.bloodDonorWrap, { marginTop: 0, marginBottom: spacing.md }]}>{donorStrip}</View> : null}
+        {incomingRow ? <View style={{ marginBottom: spacing.md }}>{incomingRow}</View> : null}
         <View style={styles.bloodQuick}>
           <QuickAccessItem icon="people-outline" label="Nearby Donors" onPress={goNearbyDonors} color={blood.main} tint={blood.tint} />
           <QuickAccessItem icon="business-outline" label="Blood Banks" onPress={goBloodBanks} color={blood.main} tint={blood.tint} />
@@ -216,7 +220,8 @@ export const HomeScreen = ({ navigation }) => {
           <QuickAccessItem icon="document-text-outline" label="My Requests" onPress={goMyRequests} color={colors.modules.news.main} tint={colors.modules.news.tint} />
         </View>
       </View>
-    </FadeInUp>
+      </FadeInUp>
+    </View>
   );
 
   const homeSections = [
@@ -225,7 +230,7 @@ export const HomeScreen = ({ navigation }) => {
       order,
       render: () => <Component navigation={navigation} />,
     })),
-    { id: 'blood', order: 50, render: renderBloodHelp },
+    { id: 'blood', order: 5, render: renderBloodHelp },
   ].sort((a, b) => a.order - b.order);
 
   const gridCards = [
@@ -475,6 +480,63 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderWidth: 1,
     borderColor: '#F3E8E8',
+    marginTop: spacing.md,
+  },
+  bloodHero: {
+    borderRadius: 24,
+    padding: spacing.xl,
+    marginTop: spacing.lg,
+    overflow: 'hidden',
+  },
+  heroCircle: {
+    position: 'absolute',
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    right: -50,
+    top: -50,
+    backgroundColor: 'rgba(255,255,255,0.10)',
+  },
+  bloodHeroArt: {
+    position: 'absolute',
+    right: 12,
+    top: 30,
+  },
+  bloodHeroPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  bloodHeroPillText: {
+    fontFamily: fontFamilies.extraBold,
+    fontSize: 10.5,
+    letterSpacing: 0.8,
+    color: '#FFFFFF',
+    marginLeft: 5,
+  },
+  bloodHeroTitle: {
+    fontFamily: fontFamilies.extraBold,
+    fontSize: 24,
+    lineHeight: 30,
+    color: '#FFFFFF',
+    marginTop: spacing.md,
+  },
+  bloodHeroSub: {
+    fontFamily: fontFamilies.medium,
+    fontSize: 13,
+    color: '#FEE2E2',
+    marginTop: 4,
+  },
+  bloodBtnWhite: {
+    backgroundColor: '#FFFFFF',
+  },
+  bloodBtnGhost: {
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.85)',
   },
   bloodTop: {
     flexDirection: 'row',

@@ -7,19 +7,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        // MyCityZone brand (app chrome, services). `primary` below stays red for blood / SOS.
+        // MyCityZone brand: one red UI across the site.
         brand: {
-          950: '#0B1A45',
-          900: '#1E3A8A',
-          800: '#1E40AF',
-          700: '#1D4ED8',
-          600: '#2563EB',
-          500: '#3B82F6',
-          400: '#60A5FA',
-          300: '#93C5FD',
-          200: '#BFDBFE',
-          100: '#DBEAFE',
-          50: '#EFF6FF',
+          950: '#450A0A',
+          900: '#7F1D1D',
+          800: '#991B1B',
+          700: '#B91C1C',
+          600: '#DC2626',
+          500: '#EF4444',
+          400: '#F87171',
+          300: '#FCA5A5',
+          200: '#FECACA',
+          100: '#FEE2E2',
+          50: '#FFF5F5',
         },
         navy: {
           950: '#070D1A',
@@ -78,7 +78,7 @@ export default {
         'intro-out': 'intro-out 0.45s ease-in 1.6s forwards',
       },
       backgroundImage: {
-        'gradient-brand': 'linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 55%, #3B82F6 100%)',
+        'gradient-brand': 'linear-gradient(135deg, #7F1D1D 0%, #B91C1C 55%, #DC2626 100%)',
         'gradient-alert': 'linear-gradient(to right, #991B1B, #C62828)',
         'gradient-sos': 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
         'gradient-hero-text': 'linear-gradient(135deg, #991B1B 0%, #DC2626 50%, #EF4444 100%)',
